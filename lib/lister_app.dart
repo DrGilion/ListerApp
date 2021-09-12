@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lister_app/home_page.dart';
+import 'package:lister_app/page/home_page.dart';
+import 'package:lister_app/page/item_creation_page.dart';
 
 class ListerApp extends StatelessWidget {
   @override
@@ -11,7 +12,8 @@ class ListerApp extends StatelessWidget {
       ),
       initialRoute: HomePage.routeName,
       routes: {
-        HomePage.routeName: (context) => HomePage(),
+        HomePage.routeName: (_) => HomePage(),
+        ItemCreationPage.routeName: (_) => ItemCreationPage()
       },
     );
   }
