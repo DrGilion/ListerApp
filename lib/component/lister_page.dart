@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
+import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/page/item_creation_page.dart';
 
@@ -25,6 +26,13 @@ class _ListerPageState extends State<ListerPage> {
         child: Icon(Icons.add),
         onPressed: () async {
           final newItem = await Navigator.of(context).pushNamed(ItemCreationPage.routeName);
+
+          if(newItem != null){
+            setState(() {
+              widget.list.items.add(newItem as ListerItem);
+            });
+          }
+
         },
       ),
     );
