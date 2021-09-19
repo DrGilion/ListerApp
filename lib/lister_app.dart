@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lister_app/page/home_page.dart';
 import 'package:lister_app/page/item_creation_page.dart';
 import 'package:lister_app/service/import_export_service.dart';
@@ -15,6 +16,14 @@ class ListerApp extends StatelessWidget {
       ],
       builder: (context, _) =>  MaterialApp(
         title: 'Lister App',
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('en', ''), // English, no country code
+        ],
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
