@@ -5,15 +5,15 @@ import 'package:lister_app/service/persistence_service.dart';
 class ItemCreationPage extends StatefulWidget {
   static const String routeName = "ItemCreationPage";
 
-  const ItemCreationPage({Key? key}) : super(key: key);
+  final int listId;
+
+  const ItemCreationPage(this.listId, {Key? key}) : super(key: key);
 
   @override
   _ItemCreationPageState createState() => _ItemCreationPageState();
 }
 
 class _ItemCreationPageState extends State<ItemCreationPage> {
-  late int listId;
-
   String? name;
   String? description;
   bool experienced = false;
@@ -22,13 +22,6 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
   final GlobalKey<FormState> formKey = GlobalKey();
 
   final InputDecoration inputDecoration = InputDecoration(prefixIcon: Icon(Icons.edit));
-
-  @override
-  void initState() {
-    super.initState();
-
-    listId = ModalRoute.of(context)!.settings.arguments as int;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +52,8 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                     }
                   },
                 ),
-                TextFormField(
-                  decoration: inputDecoration.copyWith(
-                      labelText: 'Description'
-                  ),
-                  initialValue: description,
-                ),
                 CheckboxListTile(
+                  title: Text("Experienced"),
                     value: experienced,
                     onChanged: (value) {
                       if (value != null) {
@@ -75,8 +63,17 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                       }
                     }),
                 TextFormField(
+                  decoration: inputDecoration.copyWith(
+                      labelText: 'Rating'
+                  ),
                   keyboardType: TextInputType.number,
                   initialValue: rating.toString(),
+                ),
+                TextFormField(
+                  decoration: inputDecoration.copyWith(
+                      labelText: 'Description'
+                  ),
+                  initialValue: description,
                 )
               ],
             ),
@@ -89,7 +86,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
   void _trySave() {
     if (formKey.currentState!.validate()) {
       ListerItem newItem =
-          PersistenceService.of(context).createItem(listId, name!, description ?? '', rating, experienced);
+          PersistenceService.of(context).createItem(widget.listId, name!, description ?? '', rating, experienced);
       Navigator.of(context).pop(newItem);
     }
   }

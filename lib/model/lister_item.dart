@@ -1,4 +1,6 @@
 class ListerItem{
+  static const String tableName = "core_list_item";
+
   int id;
   int listId;
   String name;
