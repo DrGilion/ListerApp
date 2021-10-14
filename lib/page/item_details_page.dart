@@ -13,7 +13,6 @@ class ItemDetailsPage extends StatefulWidget {
 }
 
 class _ItemDetailsPageState extends State<ItemDetailsPage> {
-
   late ListerItem listerItem;
 
   @override
@@ -28,15 +27,13 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Entry details'),
+          title: const Text('Entry details'),
         ),
         body: SingleChildScrollView(
           child: Column(
             children: [
               TextFormField(
-                decoration: InputDecoration(
-                    labelText: 'Name *'
-                ),
+                decoration: const InputDecoration(labelText: 'Name *'),
                 initialValue: listerItem.name,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -45,7 +42,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                 },
               ),
               CheckboxListTile(
-                  title: Text("Experienced"),
+                  title: const Text("Experienced"),
                   value: listerItem.experienced,
                   onChanged: (value) {
                     if (value != null) {
@@ -55,16 +52,12 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     }
                   }),
               TextFormField(
-                decoration: InputDecoration(
-                    labelText: 'Rating'
-                ),
+                decoration: const InputDecoration(labelText: 'Rating'),
                 keyboardType: TextInputType.number,
                 initialValue: listerItem.rating.toString(),
               ),
               TextFormField(
-                decoration: InputDecoration(
-                    labelText: 'Description'
-                ),
+                decoration: const InputDecoration(labelText: 'Description'),
                 initialValue: listerItem.description,
               )
             ],

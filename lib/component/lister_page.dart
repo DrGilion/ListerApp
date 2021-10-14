@@ -36,7 +36,7 @@ class _ListerPageState extends State<ListerPage> {
       floatingActionButton: completeList == null
           ? null
           : FloatingActionButton(
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
               onPressed: () => _tryAddItem(context),
             ),
     );
@@ -44,14 +44,14 @@ class _ListerPageState extends State<ListerPage> {
 
   Widget _buildBody(BuildContext context) {
     if (completeList == null) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (completeList!.items.isEmpty) {
       return Center(
         child: TextButton.icon(
-          icon: Icon(Icons.add),
-          label: Text('Add Item'),
+          icon: const Icon(Icons.add),
+          label: const Text('Add Item'),
           onPressed: () => _tryAddItem(context),
         ),
       );
@@ -59,7 +59,7 @@ class _ListerPageState extends State<ListerPage> {
 
     return ListView.separated(
       itemBuilder: (context, index) => ListerItemTile(completeList!.items[index]),
-      separatorBuilder: (_, __) => Divider(),
+      separatorBuilder: (_, __) => const Divider(),
       itemCount: completeList!.items.length,
     );
   }

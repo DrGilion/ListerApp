@@ -8,9 +8,9 @@ class ImportExportService {
   ListerFilerFormat _determineFormat(String extension) {
     switch (extension) {
       case '.json':
-        return ListerFilerFormat.Json;
+        return ListerFilerFormat.json;
       default:
-        return ListerFilerFormat.Txt;
+        return ListerFilerFormat.txt;
     }
   }
 
@@ -24,4 +24,4 @@ class ImportExportService {
   void exportListerFile(ListerFilerFormat fileFormat) {}
 }
 
-enum ListerFilerFormat { Txt, Json }
+enum ListerFilerFormat { txt, json }

@@ -14,7 +14,7 @@ class SaveLoadingButton extends StatelessWidget {
               width: IconTheme.of(context).size,
               height: IconTheme.of(context).size,
               child: const CircularProgressIndicator(color: Colors.white))
-          : Icon(Icons.save),
+          : const Icon(Icons.save),
       tooltip: 'Save',
       onPressed: onPressed,
     );

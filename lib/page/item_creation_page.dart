@@ -23,14 +23,14 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
   final GlobalKey<FormState> formKey = GlobalKey();
   bool isSaving = false;
 
-  final InputDecoration inputDecoration = InputDecoration();
+  final InputDecoration inputDecoration = const InputDecoration();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Create Entry'),
+          title: const Text('Create Entry'),
           actions: [
             SaveLoadingButton(
               isSaving: isSaving,
@@ -58,7 +58,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                 ),
                 const SizedBox(height: 10),
                 CheckboxListTile(
-                    title: Text("Experienced"),
+                    title: const Text("Experienced"),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     value: experienced,
@@ -112,7 +112,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
             .createItem(widget.listId, name!, description ?? '', rating, experienced);
         Navigator.of(context).pop(newItem);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text('Could not create entry!', style: TextStyle(color: Colors.white))));
       }

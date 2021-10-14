@@ -12,7 +12,7 @@ import 'package:sqflite/sqflite.dart';
 class ListerApp extends StatelessWidget {
   final Database database;
 
-  ListerApp(this.database);
+  const ListerApp(this.database, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +23,12 @@ class ListerApp extends StatelessWidget {
       ],
       builder: (context, _) => MaterialApp(
           title: 'Lister App',
-          localizationsDelegates: [
+          localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [
+          supportedLocales: const [
             Locale('en', ''), // English, no country code
           ],
           theme: ThemeData(
@@ -40,7 +40,7 @@ class ListerApp extends StatelessWidget {
 
             switch (settings.name) {
               case HomePage.routeName:
-                route = HomePage();
+                route = const HomePage();
                 break;
               case ItemCreationPage.routeName:
                 route = ItemCreationPage(settings.arguments as int);
