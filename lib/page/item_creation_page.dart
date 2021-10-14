@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lister_app/component/save_loading_button.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
@@ -20,8 +21,9 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
   int rating = 0;
 
   final GlobalKey<FormState> formKey = GlobalKey();
+  bool isSaving = false;
 
-  final InputDecoration inputDecoration = InputDecoration(prefixIcon: Icon(Icons.edit));
+  final InputDecoration inputDecoration = InputDecoration();
 
   @override
   Widget build(BuildContext context) {
@@ -30,30 +32,35 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
         appBar: AppBar(
           title: Text('Create Entry'),
           actions: [
-            IconButton(
-              icon: Icon(Icons.save),
-              onPressed: _trySave,
+            SaveLoadingButton(
+              isSaving: isSaving,
+              onPressed: () => _trySave(context),
             )
           ],
         ),
         body: Form(
           key: formKey,
-          child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
                 TextFormField(
-                  decoration: inputDecoration.copyWith(
-                    labelText: 'Name *'
-                  ),
+                  decoration: inputDecoration.copyWith(labelText: 'Name *'),
                   initialValue: name,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Name must not be empty!';
                     }
                   },
+                  onChanged: (value) {
+                    name = value;
+                  },
                 ),
+                const SizedBox(height: 10),
                 CheckboxListTile(
-                  title: Text("Experienced"),
+                    title: Text("Experienced"),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
                     value: experienced,
                     onChanged: (value) {
                       if (value != null) {
@@ -62,18 +69,29 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                         });
                       }
                     }),
-                TextFormField(
-                  decoration: inputDecoration.copyWith(
-                      labelText: 'Rating'
-                  ),
-                  keyboardType: TextInputType.number,
-                  initialValue: rating.toString(),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<int>(
+                  value: rating,
+                  decoration: inputDecoration.copyWith(labelText: 'Rating'),
+                  items: Iterable<int>.generate(11)
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e.toString())))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      rating = value;
+                    }
+                  },
                 ),
-                TextFormField(
-                  decoration: inputDecoration.copyWith(
-                      labelText: 'Description'
+                const SizedBox(height: 10),
+                Expanded(
+                  child: TextFormField(
+                    decoration: inputDecoration.copyWith(labelText: 'Description'),
+                    maxLines: null,
+                    initialValue: description,
+                    onChanged: (value) {
+                      description = value;
+                    },
                   ),
-                  initialValue: description,
                 )
               ],
             ),
@@ -83,11 +101,25 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
     );
   }
 
-  void _trySave() {
+  Future<void> _trySave(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      ListerItem newItem =
-          PersistenceService.of(context).createItem(widget.listId, name!, description ?? '', rating, experienced);
-      Navigator.of(context).pop(newItem);
+      setState(() {
+        isSaving = true;
+      });
+
+      try {
+        ListerItem newItem = await PersistenceService.of(context)
+            .createItem(widget.listId, name!, description ?? '', rating, experienced);
+        Navigator.of(context).pop(newItem);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Could not create entry!', style: TextStyle(color: Colors.white))));
+      }
+
+      setState(() {
+        isSaving = false;
+      });
     }
   }
 }

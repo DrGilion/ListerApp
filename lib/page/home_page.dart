@@ -25,9 +25,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     PersistenceService.of(context).getListsSimple().then((value) {
-      setState(() {
-        lists = value;
+      value.fold((l) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Could not retrieve lists!', style: TextStyle(color: Colors.white))));
+      }, (r) {
+        setState(() {
+          lists = r;
+        });
       });
+
     });
   }
 
@@ -38,77 +45,81 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: Text(_getAppbarTitle()),
         ),
-        drawer: Drawer(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
-                  child: Center(child: Text('Choose List')),
-                ),
-                ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: lists?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(lists![index].name),
-                        trailing: PopupMenuButton<String>(
-                          itemBuilder: (context) => [
-                            PopupMenuItem(value: optionRename, child: ListTile(title: Text('Rename'))),
-                            PopupMenuItem(value: optionDelete, child: ListTile(title: Text('Delete')))
-                          ],
-                          onSelected: (value) async {
-                            switch (value) {
-                              case optionRename:
-                                final String? newName = await showTextFieldDialog(context, 'Rename List', 'Name',
-                                    initialValue: lists![index].name);
-                                if (newName != null) {
-                                  final int updatedCount =
-                                      await PersistenceService.of(context).renameList(lists![index].id!, newName);
-                                  if (updatedCount > 0) {
-                                    setState(() {
-                                      lists![index].name = newName;
-                                    });
-                                  }
-                                }
-
-                                break;
-                              case optionDelete:
-                                final int deletedCount =
-                                    await PersistenceService.of(context).deleteList(lists![index].id!);
-                                if (deletedCount > 0) {
-                                  setState(() {
-                                    currentIndex = 0;
-                                    lists!.removeAt(index);
-                                  });
-                                }
-                                break;
-                            }
-                          },
-                        ),
-                        onTap: () {
-                          setState(() {
-                            currentIndex = index;
-                          });
-                          Navigator.of(context).pop();
-                        },
-                      );
-                    }),
-                ListTile(
-                  leading: Icon(Icons.add),
-                  title: Text('Add List'),
-                  onTap: () => _tryAddList(context),
-                )
-              ],
-            ),
-          ),
-        ),
+        drawer: _buildDrawer(context),
         body: _buildBody(context),
       ),
     );
+  }
+
+  Drawer _buildDrawer(BuildContext context) {
+    return Drawer(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Center(child: Text('Choose List')),
+              ),
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: lists?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(lists![index].name),
+                      trailing: PopupMenuButton<String>(
+                        itemBuilder: (context) => [
+                          PopupMenuItem(value: optionRename, child: ListTile(title: Text('Rename'))),
+                          PopupMenuItem(value: optionDelete, child: ListTile(title: Text('Delete')))
+                        ],
+                        onSelected: (value) async {
+                          switch (value) {
+                            case optionRename:
+                              final String? newName = await showTextFieldDialog(context, 'Rename List', 'Name',
+                                  initialValue: lists![index].name);
+                              if (newName != null) {
+                                final int updatedCount =
+                                    await PersistenceService.of(context).renameList(lists![index].id!, newName);
+                                if (updatedCount > 0) {
+                                  setState(() {
+                                    lists![index].name = newName;
+                                  });
+                                }
+                              }
+
+                              break;
+                            case optionDelete:
+                              final int deletedCount =
+                                  await PersistenceService.of(context).deleteList(lists![index].id!);
+                              if (deletedCount > 0) {
+                                setState(() {
+                                  currentIndex = 0;
+                                  lists!.removeAt(index);
+                                });
+                              }
+                              break;
+                          }
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          currentIndex = index;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  }),
+              ListTile(
+                leading: Icon(Icons.add),
+                title: Text('Add List'),
+                onTap: () => _tryAddList(context),
+              )
+            ],
+          ),
+        ),
+      );
   }
 
   String _getAppbarTitle() {
@@ -126,7 +137,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    return ListerPage(lists![currentIndex]);
+    return ListerPage(lists![currentIndex], key: ValueKey(lists![currentIndex].id));
   }
 
   Future<void> _tryAddList(BuildContext context) async {

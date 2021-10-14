@@ -11,7 +11,7 @@ class ListerItemTile extends StatelessWidget {
     return ListTile(
       leading: listItem.experienced ? Icon(Icons.check) : Icon(Icons.close),
       title: Text(listItem.name),
-      subtitle: Text(listItem.description),
+      subtitle: Text(listItem.description, maxLines: 2, overflow: TextOverflow.ellipsis,),
       trailing: Text(listItem.rating.toString()),
     );
   }

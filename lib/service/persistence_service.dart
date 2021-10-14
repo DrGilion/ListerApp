@@ -1,4 +1,6 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:lister_app/model/failure.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
@@ -12,16 +14,25 @@ class PersistenceService {
 
   PersistenceService(this.database);
 
-  Future<List<SimpleListerList>> getListsSimple() async {
-    final List<Map<String, dynamic>> results = await database.query(SimpleListerList.tableName);
-    return results.map((e) => SimpleListerList.fromJson(e)).toList();
+  Future<Either<Failure, List<SimpleListerList>>> getListsSimple() async {
+    try {
+      final List<Map<String, dynamic>> results = await database.query(SimpleListerList.tableName);
+      return Right(results.map((e) => SimpleListerList.fromJson(e)).toList());
+    } catch (e) {
+      return Left(Failure());
+    }
   }
 
   Future<ListerList> getCompleteList(int listId) async {
     final Map<String, Object?> result =
         (await database.query(SimpleListerList.tableName, where: 'id = ?', whereArgs: [listId])).first;
     final theList = SimpleListerList.fromJson(result);
-    return ListerList(theList.id!, theList.name, []);
+
+    final List<Map<String, dynamic>> itemResults =
+        await database.query(ListerItem.tableName, where: 'list_id = ?', whereArgs: [listId]);
+    final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
+
+    return ListerList(theList.id!, theList.name, items);
   }
 
   Future<SimpleListerList> createList(String name) async {
@@ -44,9 +55,11 @@ class PersistenceService {
     return 0;
   }
 
-  ListerItem createItem(int listId, String name, String description, int rating, bool experienced) {
+  Future<ListerItem> createItem(int listId, String name, String description, int rating, bool experienced) async {
     final DateTime now = DateTime.now();
-    return ListerItem(_getNextItemId(), listId, name, description, rating, experienced, now, now);
+    final newItem = ListerItem(null, listId, name, description, rating, experienced, now, now);
+    newItem.id = await database.insert(ListerItem.tableName, newItem.toJson());
+    return newItem;
   }
 
   ListerItem updateItemName(int itemId, String name) {

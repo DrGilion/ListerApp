@@ -1,10 +1,9 @@
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'simple_lister_list.g.dart';
 
 @JsonSerializable()
-class SimpleListerList{
+class SimpleListerList {
   static const String tableName = "core_list";
 
   @JsonKey(includeIfNull: false)

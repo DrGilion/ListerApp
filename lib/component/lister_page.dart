@@ -16,7 +16,6 @@ class ListerPage extends StatefulWidget {
 }
 
 class _ListerPageState extends State<ListerPage> {
-
   ListerList? completeList;
 
   @override
@@ -34,19 +33,12 @@ class _ListerPageState extends State<ListerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildBody(context),
-      floatingActionButton: completeList == null ? null : FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          final newItem = await Navigator.of(context).pushNamed(ItemCreationPage.routeName);
-
-          if(newItem != null){
-            setState(() {
-              completeList!.items.add(newItem as ListerItem);
-            });
-          }
-
-        },
-      ),
+      floatingActionButton: completeList == null
+          ? null
+          : FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () => _tryAddItem(context),
+            ),
     );
   }
 
@@ -57,7 +49,11 @@ class _ListerPageState extends State<ListerPage> {
 
     if (completeList!.items.isEmpty) {
       return Center(
-        child: TextButton.icon(onPressed: () {}, icon: Icon(Icons.add), label: Text('Add Item')),
+        child: TextButton.icon(
+          icon: Icon(Icons.add),
+          label: Text('Add Item'),
+          onPressed: () => _tryAddItem(context),
+        ),
       );
     }
 
@@ -66,5 +62,15 @@ class _ListerPageState extends State<ListerPage> {
       separatorBuilder: (_, __) => Divider(),
       itemCount: completeList!.items.length,
     );
+  }
+
+  Future<void> _tryAddItem(BuildContext context) async {
+    final newItem = await Navigator.of(context).pushNamed(ItemCreationPage.routeName, arguments: widget.list.id);
+
+    if (newItem != null) {
+      setState(() {
+        completeList!.items.add(newItem as ListerItem);
+      });
+    }
   }
 }
