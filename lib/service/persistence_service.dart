@@ -80,11 +80,16 @@ class PersistenceService {
     return 0;
   }
 
-  Future<ListerItem> createItem(int listId, String name, String description, int rating, bool experienced) async {
-    final DateTime now = DateTime.now();
-    final newItem = ListerItem(null, listId, name, description, rating, experienced, now, now);
-    newItem.id = await database.insert(ListerItem.tableName, newItem.toJson());
-    return newItem;
+  Future<Either<Failure, ListerItem>> createItem(int listId, String name, String description, int rating, bool experienced) async {
+    try{
+      final DateTime now = DateTime.now();
+      final newItem = ListerItem(null, listId, name, description, rating, experienced, now, now);
+      newItem.id = await database.insert(ListerItem.tableName, newItem.toJson());
+      return Right(newItem);
+    }catch(e, stack){
+      return Left(Failure(e, stack));
+    }
+
   }
 
   ListerItem updateItemName(int itemId, String name) {
@@ -95,13 +100,52 @@ class PersistenceService {
     return ListerItem(_getNextItemId(), 0, '', '', 0, false, DateTime.now(), DateTime.now());
   }
 
-  ListerItem updateItemRating(int itemId, int rating) {
-    return ListerItem(_getNextItemId(), 0, '', '', 0, false, DateTime.now(), DateTime.now());
+  Future<Either<Failure,ListerItem>> updateItemRating(ListerItem item, int rating) async {
+    try {
+      final updatedItem = ListerItem(item.id, item.listId, item.name, item.description, rating, item.experienced, item.createdOn, DateTime.now());
+      final int rowsAffected = await database.update(
+          ListerItem.tableName, updatedItem.toJson(),
+          where: 'id = ?', whereArgs: [item.id]);
+
+      if(rowsAffected == 1){
+        return Right(updatedItem);
+      }else {
+        return Left(Failure('Failed to update item', StackTrace.current));
+      }
+
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
   }
 
-  ListerItem updateItemExperienced(int itemId, bool experienced) {
-    return ListerItem(_getNextItemId(), 0, '', '', 0, false, DateTime.now(), DateTime.now());
+  Future<Either<Failure,ListerItem>> updateItemExperienced(ListerItem item, bool experienced) async {
+    try {
+      final updatedItem = ListerItem(item.id, item.listId, item.name, item.description, item.rating, experienced, item.createdOn, DateTime.now());
+      final int rowsAffected = await database.update(
+          ListerItem.tableName, updatedItem.toJson(),
+          where: 'id = ?', whereArgs: [item.id]);
+
+      if(rowsAffected == 1){
+        return Right(updatedItem);
+      }else {
+        return Left(Failure('Failed to update item', StackTrace.current));
+      }
+
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
   }
 
-  void deleteItem(int itemId) {}
+  Future<Either<Failure,int>> deleteItem(int itemId) async {
+    try {
+      final int itemsDeleted = await database.delete(ListerItem.tableName, where: 'id = ?', whereArgs: [itemId]);
+      if (itemsDeleted == 1) {
+        return Right(itemsDeleted);
+      } else {
+        return Left(Failure('Could not delete item', StackTrace.current));
+      }
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
+  }
 }

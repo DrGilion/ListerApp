@@ -1,6 +1,6 @@
 class Failure {
-  final Object exception;
+  final Object error;
   final StackTrace stackTrace;
 
-  Failure(this.exception, this.stackTrace);
+  Failure(this.error, this.stackTrace);
 }

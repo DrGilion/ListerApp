@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
 
     PersistenceService.of(context).getListsSimple().then((value) {
       value.fold((l) {
-        showErrorMessage(context, 'Could not retrieve lists!', l.exception, l.stackTrace);
+        showErrorMessage(context, 'Could not retrieve lists!', l.error, l.stackTrace);
       }, (r) {
         setState(() {
           lists = r;
@@ -67,6 +67,7 @@ class _HomePageState extends State<HomePage> {
                 itemCount: lists?.length ?? 0,
                 itemBuilder: (context, index) {
                   return ListTile(
+                    leading: Text('ID: ' + lists![index].id.toString()),
                     title: Text(lists![index].name),
                     trailing: PopupMenuButton<String>(
                       itemBuilder: (context) => const [
@@ -81,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                             if (newName != null) {
                               PersistenceService.of(context).renameList(lists![index].id!, newName).then((value) {
                                 value.fold((l) {
-                                  showErrorMessage(context, 'Could not rename list ${lists![index].name}', l.exception,
+                                  showErrorMessage(context, 'Could not rename list ${lists![index].name}', l.error,
                                       l.stackTrace);
                                 }, (r) {
                                   if (r > 0) {
@@ -107,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                             if (decision) {
                               PersistenceService.of(context).deleteList(lists![index].id!).then((value) {
                                 value.fold((l) {
-                                  showErrorMessage(context, 'Could not delete list!', l.exception, l.stackTrace);
+                                  showErrorMessage(context, 'Could not delete list!', l.error, l.stackTrace);
                                 }, (r) {
                                   setState(() {
                                     currentIndex = 0;
@@ -164,7 +165,7 @@ class _HomePageState extends State<HomePage> {
     if (name != null) {
       PersistenceService.of(context).createList(name).then((value) {
         value.fold((l) {
-          showErrorMessage(context, 'Could not create list "$name"!', l.exception, l.stackTrace);
+          showErrorMessage(context, 'Could not create list "$name"!', l.error, l.stackTrace);
         }, (r) {
           setState(() {
             lists?.add(r);

@@ -4,6 +4,7 @@ import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
+import 'package:lister_app/notification/item_removed_notification.dart';
 import 'package:lister_app/page/item_creation_page.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
@@ -25,7 +26,7 @@ class _ListerPageState extends State<ListerPage> {
 
     PersistenceService.of(context).getCompleteList(widget.list.id!).then((value) {
       value.fold((l) {
-        showErrorMessage(context, 'Could not retrieve items for list "${widget.list.name}"', l.exception, l.stackTrace);
+        showErrorMessage(context, 'Could not retrieve items for list "${widget.list.name}"', l.error, l.stackTrace);
       }, (r) {
         setState(() {
           completeList = r;
@@ -62,10 +63,18 @@ class _ListerPageState extends State<ListerPage> {
       );
     }
 
-    return ListView.separated(
-      itemBuilder: (context, index) => ListerItemTile(completeList!.items[index]),
-      separatorBuilder: (_, __) => const Divider(color: Colors.black,),
-      itemCount: completeList!.items.length,
+    return NotificationListener<ItemRemovedNotification>(
+      onNotification: (notification) {
+        completeList!.items.removeWhere((element) => element.id == notification.itemId);
+        return false;
+      },
+      child: ListView.separated(
+        itemBuilder: (context, index) => ListerItemTile(completeList!.items[index]),
+        separatorBuilder: (_, __) => const Divider(
+          color: Colors.black,
+        ),
+        itemCount: completeList!.items.length,
+      ),
     );
   }
 

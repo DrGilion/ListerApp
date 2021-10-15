@@ -34,7 +34,9 @@ class _ListerItemTileState extends State<ListerItemTile> {
         if (returnedItem == null) {
           ItemRemovedNotification(listItem.id!).dispatch(context);
         } else {
-          listItem = returnedItem as ListerItem;
+          setState(() {
+            listItem = returnedItem as ListerItem;
+          });
         }
       },
     );

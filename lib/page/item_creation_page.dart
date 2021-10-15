@@ -108,13 +108,15 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
         isSaving = true;
       });
 
-      try {
-        ListerItem newItem = await PersistenceService.of(context)
-            .createItem(widget.listId, name!, description ?? '', rating, experienced);
-        Navigator.of(context).pop(newItem);
-      } catch (e, stack) {
-        showErrorMessage(context, 'Could not create entry!', e, stack);
-      }
+      await PersistenceService.of(context)
+          .createItem(widget.listId, name!, description ?? '', rating, experienced)
+          .then((value) {
+        value.fold((l) {
+          showErrorMessage(context, 'Could not create entry!', l.error, l.stackTrace);
+        }, (r) {
+          Navigator.of(context).pop(r);
+        });
+      });
 
       setState(() {
         isSaving = false;
