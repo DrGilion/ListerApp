@@ -25,42 +25,50 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Entry details'),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Name *'),
-                initialValue: listerItem.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Name must not be empty!';
-                  }
-                },
-              ),
-              CheckboxListTile(
-                  title: const Text("Experienced"),
-                  value: listerItem.experienced,
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        listerItem.experienced = value;
-                      });
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context).pop(listerItem);
+          return false;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Entry details'),
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Name *'),
+                  initialValue: listerItem.name,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Name must not be empty!';
                     }
-                  }),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Rating'),
-                keyboardType: TextInputType.number,
-                initialValue: listerItem.rating.toString(),
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Description'),
-                initialValue: listerItem.description,
-              )
-            ],
+                  },
+                ),
+                CheckboxListTile(
+                    title: const Text("Experienced"),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    value: listerItem.experienced,
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          listerItem.experienced = value;
+                        });
+                      }
+                    }),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Rating'),
+                  keyboardType: TextInputType.number,
+                  initialValue: listerItem.rating.toString(),
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Description'),
+                  initialValue: listerItem.description,
+                )
+              ],
+            ),
           ),
         ),
       ),

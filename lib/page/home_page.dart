@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lister_app/component/confimation_dialog.dart';
+import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_page.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
@@ -26,9 +28,7 @@ class _HomePageState extends State<HomePage> {
 
     PersistenceService.of(context).getListsSimple().then((value) {
       value.fold((l) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('Could not retrieve lists!', style: TextStyle(color: Colors.white))));
+        showErrorMessage(context, 'Could not retrieve lists!', l.exception, l.stackTrace);
       }, (r) {
         setState(() {
           lists = r;
@@ -76,25 +76,44 @@ class _HomePageState extends State<HomePage> {
                       onSelected: (value) async {
                         switch (value) {
                           case optionRename:
-                            final String? newName = await showTextFieldDialog(context, 'Rename List', 'Name',
+                            final String? newName = await showTextFieldDialog(context, 'Rename list', 'Name',
                                 initialValue: lists![index].name);
                             if (newName != null) {
-                              final int updatedCount =
-                                  await PersistenceService.of(context).renameList(lists![index].id!, newName);
-                              if (updatedCount > 0) {
-                                setState(() {
-                                  lists![index].name = newName;
+                              PersistenceService.of(context).renameList(lists![index].id!, newName).then((value) {
+                                value.fold((l) {
+                                  showErrorMessage(context, 'Could not rename list ${lists![index].name}', l.exception,
+                                      l.stackTrace);
+                                }, (r) {
+                                  if (r > 0) {
+                                    setState(() {
+                                      lists![index].name = newName;
+                                    });
+                                  } else {
+                                    showErrorMessage(context, 'Could not rename list ${lists![index].name}',
+                                        'Failed to rename list', StackTrace.current);
+                                  }
                                 });
-                              }
+                              });
                             }
 
                             break;
                           case optionDelete:
-                            final int deletedCount = await PersistenceService.of(context).deleteList(lists![index].id!);
-                            if (deletedCount > 0) {
-                              setState(() {
-                                currentIndex = 0;
-                                lists!.removeAt(index);
+                            final bool decision = await showConfirmationDialog(
+                              context,
+                              'Delete list',
+                              'Are you sure that you want to delete the list "${lists![index].name}"?',
+                            );
+
+                            if (decision) {
+                              PersistenceService.of(context).deleteList(lists![index].id!).then((value) {
+                                value.fold((l) {
+                                  showErrorMessage(context, 'Could not delete list!', l.exception, l.stackTrace);
+                                }, (r) {
+                                  setState(() {
+                                    currentIndex = 0;
+                                    lists!.removeAt(index);
+                                  });
+                                });
                               });
                             }
                             break;
@@ -143,9 +162,14 @@ class _HomePageState extends State<HomePage> {
     final String? name = await showTextFieldDialog(context, 'Create List', 'Name');
 
     if (name != null) {
-      final SimpleListerList newList = await PersistenceService.of(context).createList(name);
-      setState(() {
-        lists?.add(newList);
+      PersistenceService.of(context).createList(name).then((value) {
+        value.fold((l) {
+          showErrorMessage(context, 'Could not create list "$name"!', l.exception, l.stackTrace);
+        }, (r) {
+          setState(() {
+            lists?.add(r);
+          });
+        });
       });
     }
   }

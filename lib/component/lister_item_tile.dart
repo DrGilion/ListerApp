@@ -25,7 +25,7 @@ class _ListerItemTileState extends State<ListerItemTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: listItem.experienced ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close),
+      leading: listItem.experienced ? const Icon(Icons.check, color: Colors.green) : const SizedBox(),
       title: Text(listItem.name),
       subtitle: Text(listItem.description, maxLines: 2, overflow: TextOverflow.ellipsis),
       trailing: Text(listItem.rating.toString()),

@@ -6,8 +6,7 @@ part of 'simple_lister_list.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SimpleListerList _$SimpleListerListFromJson(Map<String, dynamic> json) =>
-    SimpleListerList(
+SimpleListerList _$SimpleListerListFromJson(Map<String, dynamic> json) => SimpleListerList(
       json['id'] as int?,
       json['name'] as String,
     );

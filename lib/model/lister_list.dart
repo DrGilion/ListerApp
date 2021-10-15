@@ -1,6 +1,6 @@
 import 'package:lister_app/model/lister_item.dart';
 
-class ListerList{
+class ListerList {
   int id;
   String name;
   List<ListerItem> items;

@@ -4,7 +4,7 @@ import 'package:lister_app/utils.dart';
 part 'lister_item.g.dart';
 
 @JsonSerializable()
-class ListerItem{
+class ListerItem {
   static const String tableName = "core_list_item";
 
   @JsonKey(includeIfNull: false)
@@ -28,5 +28,4 @@ class ListerItem{
   factory ListerItem.fromJson(Map<String, dynamic> json) => _$ListerItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListerItemToJson(this);
-
 }

@@ -18,36 +18,61 @@ class PersistenceService {
     try {
       final List<Map<String, dynamic>> results = await database.query(SimpleListerList.tableName);
       return Right(results.map((e) => SimpleListerList.fromJson(e)).toList());
-    } catch (e) {
-      return Left(Failure());
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
     }
   }
 
-  Future<ListerList> getCompleteList(int listId) async {
-    final Map<String, Object?> result =
-        (await database.query(SimpleListerList.tableName, where: 'id = ?', whereArgs: [listId])).first;
-    final theList = SimpleListerList.fromJson(result);
+  Future<Either<Failure, ListerList>> getCompleteList(int listId) async {
+    try {
+      final Map<String, Object?> result =
+          (await database.query(SimpleListerList.tableName, where: 'id = ?', whereArgs: [listId])).first;
+      final theList = SimpleListerList.fromJson(result);
 
-    final List<Map<String, dynamic>> itemResults =
-        await database.query(ListerItem.tableName, where: 'list_id = ?', whereArgs: [listId]);
-    final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
+      final List<Map<String, dynamic>> itemResults =
+          await database.query(ListerItem.tableName, where: 'list_id = ?', whereArgs: [listId]);
+      final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
 
-    return ListerList(theList.id!, theList.name, items);
+      return Right(ListerList(theList.id!, theList.name, items));
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
   }
 
-  Future<SimpleListerList> createList(String name) async {
-    final newList = SimpleListerList(null, name);
-    newList.id = await database.insert(SimpleListerList.tableName, newList.toJson());
-    return newList;
+  Future<Either<Failure, SimpleListerList>> createList(String name) async {
+    try {
+      final newList = SimpleListerList(null, name);
+      newList.id = await database.insert(SimpleListerList.tableName, newList.toJson());
+      return Right(newList);
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
   }
 
-  Future<int> renameList(int listId, String newName) async {
-    return database.update(SimpleListerList.tableName, SimpleListerList(listId, newName).toJson(),
-        where: 'id = ?', whereArgs: [listId]);
+  Future<Either<Failure, int>> renameList(int listId, String newName) async {
+    try {
+      final int rowsAffected = await database.update(
+          SimpleListerList.tableName, SimpleListerList(listId, newName).toJson(),
+          where: 'id = ?', whereArgs: [listId]);
+
+      return Right(rowsAffected);
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
   }
 
-  Future<int> deleteList(int listId) async {
-    return database.delete(SimpleListerList.tableName, where: 'id = ?', whereArgs: [listId]);
+  Future<Either<Failure, int>> deleteList(int listId) async {
+    try {
+      final int itemsDeleted = await database.delete(ListerItem.tableName, where: 'list_id = ?', whereArgs: [listId]);
+      final int listsDeleted = await database.delete(SimpleListerList.tableName, where: 'id = ?', whereArgs: [listId]);
+      if (listsDeleted == 1) {
+        return Right(itemsDeleted);
+      } else {
+        return Left(Failure('No lists deleted', StackTrace.current));
+      }
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
   }
 
   int _getNextItemId() {

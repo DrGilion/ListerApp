@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
@@ -23,8 +24,12 @@ class _ListerPageState extends State<ListerPage> {
     super.initState();
 
     PersistenceService.of(context).getCompleteList(widget.list.id!).then((value) {
-      setState(() {
-        completeList = value;
+      value.fold((l) {
+        showErrorMessage(context, 'Could not retrieve items for list "${widget.list.name}"', l.exception, l.stackTrace);
+      }, (r) {
+        setState(() {
+          completeList = r;
+        });
       });
     });
   }
@@ -59,7 +64,7 @@ class _ListerPageState extends State<ListerPage> {
 
     return ListView.separated(
       itemBuilder: (context, index) => ListerItemTile(completeList!.items[index]),
-      separatorBuilder: (_, __) => const Divider(),
+      separatorBuilder: (_, __) => const Divider(color: Colors.black,),
       itemCount: completeList!.items.length,
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/save_loading_button.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
@@ -111,10 +112,8 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
         ListerItem newItem = await PersistenceService.of(context)
             .createItem(widget.listId, name!, description ?? '', rating, experienced);
         Navigator.of(context).pop(newItem);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('Could not create entry!', style: TextStyle(color: Colors.white))));
+      } catch (e, stack) {
+        showErrorMessage(context, 'Could not create entry!', e, stack);
       }
 
       setState(() {
