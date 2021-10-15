@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/save_loading_button.dart';
-import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class ItemCreationPage extends StatefulWidget {

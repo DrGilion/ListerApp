@@ -28,6 +28,7 @@ dependencies:
   #convex_bottom_bar: ^3.0.0
   cupertino_icons: ^1.0.1
   dartz: ^0.10.0
+  flutter_linkify: ^5.0.2
   json_annotation: ^4.1.0
   logger: ^1.1.0
   path: ^1.8.0

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
 import 'package:lister_app/page/item_details_page.dart';
@@ -27,7 +28,7 @@ class _ListerItemTileState extends State<ListerItemTile> {
     return ListTile(
       leading: listItem.experienced ? const Icon(Icons.check, color: Colors.green) : const SizedBox(),
       title: Text(listItem.name),
-      subtitle: Text(listItem.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+      subtitle: Linkify(text: listItem.description, maxLines: 2, overflow: TextOverflow.ellipsis),
       trailing: Text(listItem.rating.toString()),
       onTap: () async {
         final returnedItem = await Navigator.of(context).pushNamed(ItemDetailsPage.routeName, arguments: listItem);
