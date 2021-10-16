@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
+import 'package:lister_app/component/text_to_textfield.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
@@ -65,15 +66,29 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Name *'),
-                    initialValue: listerItem.name,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Name must not be empty!';
+                  TextToTextField(
+                    label: 'Name',
+                    initialText: listerItem.name,
+                    onSave: (text) async {
+                      if(text.isEmpty){
+                        showErrorMessage(context, 'Name must not be empty!', ArgumentError('Name is empty!'), StackTrace.current);
+                        return false;
                       }
+
+                      final newItem = await PersistenceService.of(context).updateItemName(listerItem, text);
+
+                      return newItem.fold((l) {
+                        showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
+                        return false;
+                      }, (r) {
+                        setState(() {
+                          listerItem = r;
+                        });
+                        return true;
+                      });
                     },
                   ),
+                  const SizedBox(height: 10),
                   CheckboxListTile(
                       title: const Text("Experienced"),
                       controlAffinity: ListTileControlAffinity.leading,
@@ -92,6 +107,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           });
                         }
                       }),
+                  const SizedBox(height: 10),
                   DropdownButtonFormField<int>(
                     value: listerItem.rating,
                     decoration: const InputDecoration(labelText: 'Rating'),
@@ -112,9 +128,23 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       }
                     },
                   ),
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Description'),
-                    initialValue: listerItem.description,
+                  const SizedBox(height: 10),
+                  TextToTextField(
+                    label: 'Description',
+                    initialText: listerItem.description,
+                    onSave: (text) async {
+                      final newItem = await PersistenceService.of(context).updateItemDescription(listerItem, text);
+
+                      return newItem.fold((l) {
+                        showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
+                        return false;
+                      }, (r) {
+                        setState(() {
+                          listerItem = r;
+                        });
+                        return true;
+                      });
+                    },
                   )
                 ],
               ),
