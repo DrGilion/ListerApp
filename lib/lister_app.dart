@@ -33,6 +33,7 @@ class ListerApp extends StatelessWidget {
           ],
           theme: ThemeData(
             primarySwatch: Colors.blue,
+            dividerTheme: const DividerThemeData(space: 0)
           ),
           initialRoute: HomePage.routeName,
           onGenerateRoute: (RouteSettings settings) {

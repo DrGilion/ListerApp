@@ -74,7 +74,9 @@ class _ListerPageState extends State<ListerPage> {
 
     return NotificationListener<ItemRemovedNotification>(
       onNotification: (notification) {
-        completeList!.items.removeWhere((element) => element.id == notification.itemId);
+        setState(() {
+          completeList!.items.removeWhere((element) => element.id == notification.itemId);
+        });
         return false;
       },
       child: ListView.separated(
