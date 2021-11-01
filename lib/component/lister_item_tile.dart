@@ -7,7 +7,7 @@ import 'package:lister_app/page/item_details_page.dart';
 class ListerItemTile extends StatefulWidget {
   final ListerItem listItem;
 
-  const ListerItemTile(this.listItem, {Key? key}) : super(key: key);
+  const ListerItemTile( {Key? key, required this.listItem}) : super(key: key);
 
   @override
   State<ListerItemTile> createState() => _ListerItemTileState();

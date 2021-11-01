@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_page.dart';
+import 'package:lister_app/component/search_bar.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   static const String optionRename = "rename";
   static const String optionDelete = "delete";
+
   int currentIndex = 0;
 
   List<SimpleListerList>? lists;
@@ -82,8 +84,8 @@ class _HomePageState extends State<HomePage> {
                             if (newName != null) {
                               PersistenceService.of(context).renameList(lists![index].id!, newName).then((value) {
                                 value.fold((l) {
-                                  showErrorMessage(context, 'Could not rename list ${lists![index].name}', l.error,
-                                      l.stackTrace);
+                                  showErrorMessage(
+                                      context, 'Could not rename list ${lists![index].name}', l.error, l.stackTrace);
                                 }, (r) {
                                   if (r > 0) {
                                     setState(() {

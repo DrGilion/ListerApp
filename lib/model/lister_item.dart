@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:lister_app/utils.dart';
+import 'package:lister_app/util/utils.dart';
 
 part 'lister_item.g.dart';
 

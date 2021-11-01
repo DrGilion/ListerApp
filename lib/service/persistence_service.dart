@@ -23,14 +23,15 @@ class PersistenceService {
     }
   }
 
-  Future<Either<Failure, ListerList>> getCompleteList(int listId) async {
+  Future<Either<Failure, ListerList>> getCompleteList(int listId, {String searchString = ''}) async {
     try {
       final Map<String, Object?> result =
           (await database.query(SimpleListerList.tableName, where: 'id = ?', whereArgs: [listId])).first;
       final theList = SimpleListerList.fromJson(result);
 
       final List<Map<String, dynamic>> itemResults =
-          await database.query(ListerItem.tableName, where: 'list_id = ?', whereArgs: [listId]);
+          await database.query(ListerItem.tableName, where: "list_id = ?1 and name LIKE ?2", whereArgs: [listId, "%$searchString%"]);
+      print(itemResults);
       final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
 
       return Right(ListerList(theList.id!, theList.name, items));
@@ -73,11 +74,6 @@ class PersistenceService {
     } catch (e, stack) {
       return Left(Failure(e, stack));
     }
-  }
-
-  int _getNextItemId() {
-    //TODO
-    return 0;
   }
 
   Future<Either<Failure, ListerItem>> createItem(

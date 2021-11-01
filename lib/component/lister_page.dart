@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
+import 'package:lister_app/component/search_bar.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
@@ -18,27 +19,35 @@ class ListerPage extends StatefulWidget {
 }
 
 class _ListerPageState extends State<ListerPage> {
+  String? searchString;
+
   ListerList? completeList;
 
   @override
   void initState() {
     super.initState();
 
-    PersistenceService.of(context).getCompleteList(widget.list.id!).then((value) {
-      value.fold((l) {
-        showErrorMessage(context, 'Could not retrieve items for list "${widget.list.name}"', l.error, l.stackTrace);
-      }, (r) {
-        setState(() {
-          completeList = r;
-        });
-      });
-    });
+    _fetchList(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildBody(context),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        title: SearchBar(
+          onTextChange: (text) {
+            if (text != searchString) {
+              searchString = text;
+
+              _fetchList(context);
+            }
+          },
+          initialText: searchString,
+        ),
+      ),
       floatingActionButton: completeList == null
           ? null
           : FloatingActionButton(
@@ -69,13 +78,26 @@ class _ListerPageState extends State<ListerPage> {
         return false;
       },
       child: ListView.separated(
-        itemBuilder: (context, index) => ListerItemTile(completeList!.items[index]),
+        itemBuilder: (context, index) =>
+            ListerItemTile(key: ValueKey(completeList!.items[index].id), listItem: completeList!.items[index]),
         separatorBuilder: (_, __) => const Divider(
           color: Colors.black,
         ),
         itemCount: completeList!.items.length,
       ),
     );
+  }
+
+  void _fetchList(BuildContext context) {
+    PersistenceService.of(context).getCompleteList(widget.list.id!, searchString: searchString ?? '').then((value) {
+      value.fold((l) {
+        showErrorMessage(context, 'Could not retrieve items for list "${widget.list.name}"', l.error, l.stackTrace);
+      }, (r) {
+        setState(() {
+          completeList = r;
+        });
+      });
+    });
   }
 
   Future<void> _tryAddItem(BuildContext context) async {
