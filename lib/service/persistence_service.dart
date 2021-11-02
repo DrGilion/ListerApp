@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lister_app/filter/sort_direction.dart';
 import 'package:lister_app/model/failure.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
@@ -23,14 +25,17 @@ class PersistenceService {
     }
   }
 
-  Future<Either<Failure, ListerList>> getCompleteList(int listId, {String searchString = ''}) async {
+  Future<Either<Failure, ListerList>> getCompleteList(int listId,
+      {String searchString = '', required String sortField, required SortDirection sortDirection}) async {
     try {
       final Map<String, Object?> result =
           (await database.query(SimpleListerList.tableName, where: 'id = ?', whereArgs: [listId])).first;
       final theList = SimpleListerList.fromJson(result);
 
-      final List<Map<String, dynamic>> itemResults =
-          await database.query(ListerItem.tableName, where: "list_id = ?1 and name LIKE ?2", whereArgs: [listId, "%$searchString%"]);
+      final List<Map<String, dynamic>> itemResults = await database.query(ListerItem.tableName,
+          where: "list_id = ?1 and name LIKE ?2",
+          whereArgs: [listId, "%$searchString%"],
+          orderBy: "$sortField ${describeEnum(sortDirection)}");
       print(itemResults);
       final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
 

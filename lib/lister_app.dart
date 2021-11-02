@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:lister_app/filter/item_filter.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/page/home_page.dart';
 import 'package:lister_app/page/item_creation_page.dart';
@@ -20,6 +21,7 @@ class ListerApp extends StatelessWidget {
       providers: [
         Provider(create: (context) => PersistenceService(database)),
         Provider(create: (context) => ImportExportService()),
+        ChangeNotifierProvider(create: (_) => ItemFilter())
       ],
       builder: (context, _) => MaterialApp(
           title: 'Lister App',
