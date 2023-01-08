@@ -36,7 +36,6 @@ class PersistenceService {
           where: "list_id = ?1 and name LIKE ?2",
           whereArgs: [listId, "%$searchString%"],
           orderBy: "$sortField ${describeEnum(sortDirection)}");
-      print(itemResults);
       final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
 
       return Right(ListerList(theList.id!, theList.name, items));

@@ -51,6 +51,8 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                     if (value == null || value.isEmpty) {
                       return 'Name must not be empty!';
                     }
+
+                    return null;
                   },
                   onChanged: (value) {
                     name = value;

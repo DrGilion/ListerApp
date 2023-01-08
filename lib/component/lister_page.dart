@@ -10,7 +10,6 @@ import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
 import 'package:lister_app/page/item_creation_page.dart';
 import 'package:lister_app/service/persistence_service.dart';
-import 'package:provider/provider.dart';
 
 class ListerPage extends StatefulWidget {
   final SimpleListerList list;

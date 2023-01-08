@@ -87,8 +87,8 @@ class _TextToTextFieldState extends State<TextToTextField> {
                     style: const TextStyle(color: Colors.black, fontSize: 18.0),
                     options: const LinkifyOptions(humanize: false),
                     onOpen: (link) async {
-                      if (await canLaunch(link.url)) {
-                        await launch(link.url);
+                      if (await canLaunchUrl(Uri.parse(link.url))) {
+                        await launchUrl(Uri.parse(link.url));
                       } else {
                         throw 'Could not launch $link';
                       }
@@ -136,7 +136,7 @@ class _TextToTextFieldState extends State<TextToTextField> {
     setState(() {
       _isEditingText = false;
     });
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _editingController.text = widget.initialText ?? '';
     });
   }

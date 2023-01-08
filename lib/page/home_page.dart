@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_page.dart';
-import 'package:lister_app/component/search_bar.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
@@ -69,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                 itemCount: lists?.length ?? 0,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: Text('ID: ' + lists![index].id.toString()),
+                    leading: Text('ID: ${lists![index].id}'),
                     title: Text(lists![index].name),
                     trailing: PopupMenuButton<String>(
                       itemBuilder: (context) => const [
