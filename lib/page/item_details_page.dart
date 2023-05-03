@@ -110,29 +110,32 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         }
                       }),
                   const SizedBox(height: 10),
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: RatingBar.builder(
-                      initialRating: listerItem.rating.toDouble(),
-                      minRating: 0,
-                      direction: Axis.horizontal,
-                      allowHalfRating: false,
-                      itemCount: 10,
-                      itemBuilder: (context, _) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (rating) {
-                        PersistenceService.of(context).updateItemRating(listerItem, rating.toInt()).then((value) {
-                          value.fold((l) {
-                            showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
-                          }, (r) {
-                            setState(() {
-                              listerItem = r;
+                  InputDecorator(
+                    decoration: const InputDecoration(labelText: 'Rating', border: InputBorder.none),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: RatingBar.builder(
+                        initialRating: listerItem.rating.toDouble(),
+                        minRating: 0,
+                        direction: Axis.horizontal,
+                        allowHalfRating: false,
+                        itemCount: 10,
+                        itemBuilder: (context, _) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (rating) {
+                          PersistenceService.of(context).updateItemRating(listerItem, rating.toInt()).then((value) {
+                            value.fold((l) {
+                              showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
+                            }, (r) {
+                              setState(() {
+                                listerItem = r;
+                              });
                             });
                           });
-                        });
-                      },
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),

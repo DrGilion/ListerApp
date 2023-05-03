@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/save_loading_button.dart';
 import 'package:lister_app/service/persistence_service.dart';
@@ -72,17 +73,27 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                       }
                     }),
                 const SizedBox(height: 10),
-                DropdownButtonFormField<int>(
-                  value: rating,
-                  decoration: inputDecoration.copyWith(labelText: 'Rating'),
-                  items: Iterable<int>.generate(11)
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e.toString())))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      rating = value;
-                    }
-                  },
+                InputDecorator(
+                  decoration: inputDecoration.copyWith(labelText: 'Rating', border: InputBorder.none),
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: RatingBar.builder(
+                      initialRating: rating.toDouble(),
+                      minRating: 0,
+                      direction: Axis.horizontal,
+                      allowHalfRating: false,
+                      itemCount: 10,
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (newRating) {
+                        setState(() {
+                          rating = newRating.toInt();
+                        });
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Expanded(
