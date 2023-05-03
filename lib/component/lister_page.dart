@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/component/search_bar.dart';
@@ -8,7 +9,6 @@ import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
-import 'package:lister_app/page/item_creation_page.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class ListerPage extends StatefulWidget {
@@ -131,11 +131,11 @@ class _ListerPageState extends State<ListerPage> {
   }
 
   Future<void> _tryAddItem(BuildContext context) async {
-    final newItem = await Navigator.of(context).pushNamed(ItemCreationPage.routeName, arguments: widget.list.id);
+    final ListerItem? newItem = await context.push<ListerItem>(Uri(path: '/item/create', queryParameters: {'listId': widget.list.id.toString()}).toString());
 
     if (newItem != null) {
       setState(() {
-        completeList!.items.add(newItem as ListerItem);
+        completeList!.items.add(newItem);
       });
     }
   }

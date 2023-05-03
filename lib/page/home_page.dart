@@ -7,7 +7,7 @@ import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class HomePage extends StatefulWidget {
-  static const String routeName = "/";
+  static const String routeName = '/';
 
   const HomePage({Key? key}) : super(key: key);
 
