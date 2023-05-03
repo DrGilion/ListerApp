@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/text_to_textfield.dart';
@@ -70,8 +71,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     label: 'Name',
                     initialText: listerItem.name,
                     onSave: (text) async {
-                      if(text.isEmpty){
-                        showErrorMessage(context, 'Name must not be empty!', ArgumentError('Name is empty!'), StackTrace.current);
+                      if (text.isEmpty) {
+                        showErrorMessage(
+                            context, 'Name must not be empty!', ArgumentError('Name is empty!'), StackTrace.current);
                         return false;
                       }
 
@@ -108,15 +110,20 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         }
                       }),
                   const SizedBox(height: 10),
-                  DropdownButtonFormField<int>(
-                    value: listerItem.rating,
-                    decoration: const InputDecoration(labelText: 'Rating'),
-                    items: Iterable<int>.generate(11)
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e.toString())))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        PersistenceService.of(context).updateItemRating(listerItem, value).then((value) {
+                  FittedBox(
+                    fit: BoxFit.contain,
+                    child: RatingBar.builder(
+                      initialRating: listerItem.rating.toDouble(),
+                      minRating: 0,
+                      direction: Axis.horizontal,
+                      allowHalfRating: false,
+                      itemCount: 10,
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (rating) {
+                        PersistenceService.of(context).updateItemRating(listerItem, rating.toInt()).then((value) {
                           value.fold((l) {
                             showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
                           }, (r) {
@@ -125,8 +132,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                             });
                           });
                         });
-                      }
-                    },
+                      },
+                    ),
                   ),
                   const SizedBox(height: 10),
                   TextToTextField(
