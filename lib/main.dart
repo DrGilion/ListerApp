@@ -29,6 +29,7 @@ void main() async {
       }
     },
   );
+
   runApp(ListerApp(database));
 }
 

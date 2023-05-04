@@ -8,13 +8,14 @@ import 'package:lister_app/filter/item_filter.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
+import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class ListerPage extends StatefulWidget {
   final SimpleListerList list;
 
-  const ListerPage(this.list, {Key? key}) : super(key: key);
+  const ListerPage(this.list, {super.key});
 
   @override
   _ListerPageState createState() => _ListerPageState();
@@ -24,6 +25,8 @@ class _ListerPageState extends State<ListerPage> {
   String? searchString;
   late ItemFilter _filter;
   late Function() _filterListener;
+  late ItemAddedNotifier _itemAddedNotifier;
+  late Function() _itemAddedListener;
 
   ListerList? completeList;
 
@@ -36,11 +39,19 @@ class _ListerPageState extends State<ListerPage> {
     _filter.addListener(_filterListener = () {
       _fetchList(context);
     });
+    _itemAddedNotifier = ItemAddedNotifier.of(context);
+    _itemAddedNotifier.addListener(_itemAddedListener = () {
+      if(_itemAddedNotifier.item?.listId == widget.list.id){
+        print('added for this list');
+        _fetchList(context);
+      }
+    });
   }
 
   @override
   void dispose() {
     _filter.removeListener(_filterListener);
+    _itemAddedNotifier.removeListener(_itemAddedListener);
     super.dispose();
   }
 

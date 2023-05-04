@@ -10,7 +10,7 @@ import 'package:lister_app/service/persistence_service.dart';
 class ListerItemTile extends StatefulWidget {
   final ListerItem listItem;
 
-  const ListerItemTile({Key? key, required this.listItem}) : super(key: key);
+  const ListerItemTile({super.key, required this.listItem});
 
   @override
   State<ListerItemTile> createState() => _ListerItemTileState();

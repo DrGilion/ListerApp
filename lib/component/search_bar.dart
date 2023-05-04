@@ -5,7 +5,7 @@ class SearchBar extends StatefulWidget {
   final void Function(String text)? onTextChange;
   final String? initialText;
 
-  const SearchBar({Key? key, this.onTextChange, this.initialText}) : super(key: key);
+  const SearchBar({super.key, this.onTextChange, this.initialText});
 
   @override
   _SearchBarState createState() => _SearchBarState();

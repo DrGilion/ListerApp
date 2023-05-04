@@ -4,7 +4,7 @@ class SaveLoadingButton extends StatelessWidget {
   final bool isSaving;
   final VoidCallback onPressed;
 
-  const SaveLoadingButton({Key? key, required this.isSaving, required this.onPressed}) : super(key: key);
+  const SaveLoadingButton({super.key, required this.isSaving, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

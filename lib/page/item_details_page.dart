@@ -11,7 +11,7 @@ class ItemDetailsPage extends StatefulWidget {
 
   final ListerItem listerItem;
 
-  const ItemDetailsPage(this.listerItem, {Key? key}) : super(key: key);
+  const ItemDetailsPage(this.listerItem, {super.key});
 
   @override
   _ItemDetailsPageState createState() => _ItemDetailsPageState();

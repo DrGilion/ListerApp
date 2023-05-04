@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/save_loading_button.dart';
+import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class ItemCreationPage extends StatefulWidget {
   static const String routeName = "ItemCreationPage";
 
-  final int listId;
+  final int? initialListId;
 
-  const ItemCreationPage(this.listId, {Key? key}) : super(key: key);
+  const ItemCreationPage(this.initialListId, {super.key});
 
   @override
   _ItemCreationPageState createState() => _ItemCreationPageState();
 }
 
 class _ItemCreationPageState extends State<ItemCreationPage> {
+  int? listId;
   String? name;
   String? description;
   bool experienced = false;
@@ -25,6 +27,25 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
   bool isSaving = false;
 
   final InputDecoration inputDecoration = const InputDecoration();
+
+  List<SimpleListerList> availableLists = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    listId = widget.initialListId;
+
+    PersistenceService.of(context).getListsSimple().then((value) {
+      value.fold((l) {
+        showErrorMessage(context, 'Could not retrieve lists!', l.error, l.stackTrace);
+      }, (r) {
+        setState(() {
+          availableLists = r;
+        });
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +66,24 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
+                DropdownButtonFormField<int>(
+                  value: listId,
+                  decoration: inputDecoration.copyWith(labelText: 'List *'),
+                  items: availableLists.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
+                  validator: (item) {
+                    if (item == null) {
+                      return 'You must choose a list!';
+                    }
+
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      listId = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 10),
                 TextFormField(
                   decoration: inputDecoration.copyWith(labelText: 'Name *'),
                   initialValue: name,
@@ -121,7 +160,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
       });
 
       await PersistenceService.of(context)
-          .createItem(widget.listId, name!, description ?? '', rating, experienced)
+          .createItem(listId!, name!, description ?? '', rating, experienced)
           .then((value) {
         value.fold((l) {
           showErrorMessage(context, 'Could not create entry!', l.error, l.stackTrace);

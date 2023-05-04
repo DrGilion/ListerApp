@@ -9,7 +9,7 @@ import 'package:lister_app/service/persistence_service.dart';
 class HomePage extends StatefulWidget {
   static const String routeName = '/';
 
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();

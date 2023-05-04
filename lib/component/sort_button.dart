@@ -7,8 +7,7 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
   final F filter;
   final Map<String, String> optionsMap;
 
-  const SortButton({Key? key, required this.filter, required this.optionsMap})
-      : super(key: key);
+  const SortButton({super.key, required this.filter, required this.optionsMap});
 
   @override
   Widget build(BuildContext context) {

@@ -16,7 +16,7 @@
     </queries>
 
    <application
-        android:label="lister_app"
+        android:label="Lister App"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

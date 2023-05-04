@@ -10,13 +10,12 @@ class TextToTextField extends StatefulWidget {
   final Future<bool> Function(String) onSave;
 
   const TextToTextField(
-      {Key? key,
+      {super.key,
       required this.label,
       this.initialText,
       this.bigbox = false,
       this.customInputType,
-      required this.onSave})
-      : super(key: key);
+      required this.onSave});
 
   @override
   _TextToTextFieldState createState() => _TextToTextFieldState();
