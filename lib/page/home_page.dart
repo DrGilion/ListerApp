@@ -5,6 +5,7 @@ import 'package:lister_app/component/lister_page.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/';
@@ -18,6 +19,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   static const String optionRename = "rename";
   static const String optionDelete = "delete";
+
+  //showcase keys
+  GlobalKey _one = GlobalKey();
+  GlobalKey _two = GlobalKey();
+  GlobalKey _three = GlobalKey();
 
   int currentIndex = 0;
 
@@ -40,14 +46,27 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(_getAppbarTitle()),
-        ),
-        drawer: _buildDrawer(context),
-        body: _buildBody(context),
-      ),
+    return ShowCaseWidget(
+      builder: Builder(builder: (context) {
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(_getAppbarTitle()),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.help),
+                  tooltip: 'Show tutorial',
+                  onPressed: () {
+                    ShowCaseWidget.of(context).startShowCase([_one, _two, _three]);
+                  },
+                )
+              ],
+            ),
+            drawer: _buildDrawer(context),
+            body: _buildBody(context),
+          ),
+        );
+      }),
     );
   }
 
@@ -152,8 +171,12 @@ class _HomePageState extends State<HomePage> {
 
     if (lists!.isEmpty) {
       return Center(
-        child: TextButton.icon(
-            onPressed: () => _tryAddList(context), icon: const Icon(Icons.add), label: const Text('Add List')),
+        child: Showcase(
+          key: _one,
+          description: 'Click here to create a new list',
+          child: TextButton.icon(
+              onPressed: () => _tryAddList(context), icon: const Icon(Icons.add), label: const Text('Add List')),
+        ),
       );
     }
 
