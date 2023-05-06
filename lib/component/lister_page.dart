@@ -42,7 +42,6 @@ class _ListerPageState extends State<ListerPage> {
     _itemAddedNotifier = ItemAddedNotifier.of(context);
     _itemAddedNotifier.addListener(_itemAddedListener = () {
       if(_itemAddedNotifier.item?.listId == widget.list.id){
-        print('added for this list');
         _fetchList(context);
       }
     });

@@ -21,9 +21,9 @@ class _HomePageState extends State<HomePage> {
   static const String optionDelete = "delete";
 
   //showcase keys
-  GlobalKey _one = GlobalKey();
-  GlobalKey _two = GlobalKey();
-  GlobalKey _three = GlobalKey();
+  final GlobalKey _one = GlobalKey();
+  final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
 
   int currentIndex = 0;
 
@@ -47,21 +47,52 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return ShowCaseWidget(
+      disableBarrierInteraction: true,
       builder: Builder(builder: (context) {
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(
               title: Text(_getAppbarTitle()),
+              leading: Builder(
+                builder: (context) {
+                  return Showcase(
+                    key: _two,
+                    description: 'Or navigate to the drawer...',
+                    disposeOnTap: false,
+                    onTargetClick: () async {
+                      print('on target clicked');
+                      Scaffold.of(context).openDrawer();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      ShowCaseWidget.of(context).startShowCase([_three]);
+                    },
+                    child: Builder(
+                      builder: (BuildContext context) {
+                        return IconButton(
+                          icon: const Icon(Icons.menu),
+                          onPressed: () {
+                            print('opening drawer');
+                            Scaffold.of(context).openDrawer();
+                          },
+                          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+                        );
+                      },
+                    ),
+                  );
+                }
+              ),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.help),
                   tooltip: 'Show tutorial',
                   onPressed: () {
-                    ShowCaseWidget.of(context).startShowCase([_one, _two, _three]);
+                    ShowCaseWidget.of(context).startShowCase([_one, _two]);
                   },
                 )
               ],
             ),
+            onDrawerChanged: (bool isOpened){
+              print('drawer opened = $isOpened');
+            },
             drawer: _buildDrawer(context),
             body: _buildBody(context),
           ),
@@ -149,10 +180,19 @@ class _HomePageState extends State<HomePage> {
                     },
                   );
                 }),
-            ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text('Add List'),
-              onTap: () => _tryAddList(context),
+            Showcase(
+              key: _three,
+              description: 'Click here to create a new list',
+              disposeOnTap: false,
+              onTargetClick: () {
+                ShowCaseWidget.of(context).dismiss();
+                _tryAddList(context, withShowcase: false);
+              },
+              child: ListTile(
+                leading: const Icon(Icons.add),
+                title: const Text('Add List'),
+                onTap: () => _tryAddList(context),
+              ),
             )
           ],
         ),
@@ -174,6 +214,14 @@ class _HomePageState extends State<HomePage> {
         child: Showcase(
           key: _one,
           description: 'Click here to create a new list',
+          onBarrierClick: (){
+            ShowCaseWidget.of(context).next();
+          },
+          disposeOnTap: false,
+          onTargetClick: () {
+            ShowCaseWidget.of(context).dismiss();
+            _tryAddList(context, withShowcase: true);
+          },
           child: TextButton.icon(
               onPressed: () => _tryAddList(context), icon: const Icon(Icons.add), label: const Text('Add List')),
         ),
@@ -183,7 +231,8 @@ class _HomePageState extends State<HomePage> {
     return ListerPage(lists![currentIndex], key: ValueKey(lists![currentIndex].id));
   }
 
-  Future<void> _tryAddList(BuildContext context) async {
+  Future<void> _tryAddList(BuildContext context, {bool withShowcase = false}) async {
+    print('add list with showcase? $withShowcase');
     final String? name = await showTextFieldDialog(context, 'Create List', 'Name');
 
     if (name != null) {

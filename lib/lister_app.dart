@@ -27,7 +27,6 @@ class _ListerAppState extends State<ListerApp> {
   void initState() {
     super.initState();
 
-    print('-------init list app');
     const QuickActions quickActions = QuickActions();
     quickActions.initialize((String shortcutType) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
