@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Utils {
   Utils._();
 
@@ -15,5 +17,9 @@ class Utils {
 
   static bool intToBool(int value) {
     return value == 1;
+  }
+
+  static String formatDate(DateTime date){
+    return DateFormat().format(date);
   }
 }

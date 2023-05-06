@@ -23,6 +23,7 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                 title: const Text('Sort by'),
                 content: StatefulBuilder(builder: (context, setStateFn) {
                   return Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       ...optionsMap.entries.map((e) => RadioListTile<String>(
                             groupValue: selectedSortField,

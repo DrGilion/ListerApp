@@ -5,6 +5,7 @@ import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/text_to_textfield.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
+import 'package:lister_app/util/utils.dart';
 
 class ItemDetailsPage extends StatefulWidget {
   static const String routeName = "ItemDetailsPage";
@@ -155,7 +156,14 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         return true;
                       });
                     },
-                  )
+                  ),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Created on: ${Utils.formatDate(listerItem.createdOn)}')),
+                  const SizedBox(height: 10),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Modified on: ${Utils.formatDate(listerItem.modifiedOn)}')),
                 ],
               ),
             ),
