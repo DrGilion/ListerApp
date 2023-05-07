@@ -6,7 +6,7 @@ import 'package:lister_app/filter/sort_direction.dart';
 
 class SortButton<F extends BaseFilter> extends StatelessWidget {
   final F filter;
-  final Map<String, Tuple2<IconData,String>> optionsMap;
+  final Map<String, Tuple2<IconData, String>> optionsMap;
 
   const SortButton({super.key, required this.filter, required this.optionsMap});
 
@@ -29,6 +29,7 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                       ...optionsMap.entries.map((e) => RadioListTile<String>(
                             groupValue: selectedSortField,
                             value: e.key,
+                            contentPadding: EdgeInsets.zero,
                             title: Row(
                               children: [
                                 Icon(e.value.value1, color: Colors.black),
@@ -46,6 +47,7 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                       RadioListTile<SortDirection>(
                         groupValue: selectedSortDirection,
                         value: SortDirection.asc,
+                        contentPadding: EdgeInsets.zero,
                         title: Row(
                           children: const [
                             Icon(FontAwesomeIcons.arrowUp, color: Colors.black),
@@ -62,6 +64,7 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                       RadioListTile<SortDirection>(
                         groupValue: selectedSortDirection,
                         value: SortDirection.desc,
+                        contentPadding: EdgeInsets.zero,
                         title: Row(
                           children: const [
                             Icon(FontAwesomeIcons.arrowDownLong, color: Colors.black),
@@ -79,10 +82,12 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                   );
                 }),
                 actions: [
-                  TextButton(onPressed: () {
-                    filter.resetSorting();
-                    Navigator.of(context).pop();
-                  }, child: const Text('Reset')),
+                  TextButton(
+                      onPressed: () {
+                        filter.resetSorting();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Reset')),
                   TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
                   TextButton(
                       onPressed: () => Navigator.of(context).pop(Tuple2(selectedSortField, selectedSortDirection)),
