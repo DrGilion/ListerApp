@@ -25,7 +25,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  #convex_bottom_bar: ^3.0.0
+  convex_bottom_bar: 3.2.0
   cupertino_icons: 1.0.5
   dartz: 0.10.1
   flutter_linkify: 5.0.2
@@ -39,6 +39,7 @@ dependencies:
   quick_actions: 1.0.2
   showcaseview: 2.0.3
   sqflite: 2.2.8
+  table_calendar: 3.0.8
   url_launcher: 6.1.10
 
 dev_dependencies:

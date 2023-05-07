@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lister_app/filter/item_filter.dart';
+import 'package:lister_app/main.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/routing.dart';
@@ -45,7 +46,7 @@ class _ListerAppState extends State<ListerApp> {
         icon: Platform.isAndroid ? 'ic_launcher' : 'AppIcon',
       ),
     ]).then((void _) {
-      print('shortcuts enabled!');
+      logger.i('shortcuts enabled!');
     });
   }
 

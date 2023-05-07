@@ -44,6 +44,20 @@ class PersistenceService {
     }
   }
 
+  Future<Either<Failure, List<ListerItem>>> getItemsByDates(DateTime from, DateTime to) async {
+    try {
+      final List<Map<String, dynamic>> itemResults = await database.query(ListerItem.tableName,
+          where: "created_on >= ?1 and created_on <= ?2",
+          whereArgs: [from.millisecondsSinceEpoch, to.millisecondsSinceEpoch],
+      );
+      final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
+
+      return Right(items);
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
+  }
+
   Future<Either<Failure, SimpleListerList>> createList(String name) async {
     try {
       final newList = SimpleListerList(null, name);

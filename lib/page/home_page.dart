@@ -1,4 +1,6 @@
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:lister_app/component/calendar_tab.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_page.dart';
@@ -16,6 +18,10 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+enum DisplayMode {
+  lists, calendar;
+}
+
 class _HomePageState extends State<HomePage> {
   static const String optionRename = "rename";
   static const String optionDelete = "delete";
@@ -28,6 +34,8 @@ class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
 
   List<SimpleListerList>? lists;
+
+  DisplayMode displayMode = DisplayMode.lists;
 
   @override
   void initState() {
@@ -51,16 +59,14 @@ class _HomePageState extends State<HomePage> {
       builder: Builder(builder: (context) {
         return SafeArea(
           child: Scaffold(
-            appBar: AppBar(
-              title: Text(_getAppbarTitle()),
-              leading: Builder(
-                builder: (context) {
+              appBar: AppBar(
+                title: Text(_getAppbarTitle()),
+                leading: Builder(builder: (context) {
                   return Showcase(
                     key: _two,
                     description: 'Or navigate to the drawer...',
                     disposeOnTap: false,
                     onTargetClick: () async {
-                      print('on target clicked');
                       Scaffold.of(context).openDrawer();
                       await Future.delayed(const Duration(milliseconds: 500));
                       ShowCaseWidget.of(context).startShowCase([_three]);
@@ -70,7 +76,6 @@ class _HomePageState extends State<HomePage> {
                         return IconButton(
                           icon: const Icon(Icons.menu),
                           onPressed: () {
-                            print('opening drawer');
                             Scaffold.of(context).openDrawer();
                           },
                           tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
@@ -78,24 +83,30 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   );
-                }
+                }),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.help),
+                    tooltip: 'Show tutorial',
+                    onPressed: () {
+                      ShowCaseWidget.of(context).startShowCase([_one, _two]);
+                    },
+                  )
+                ],
               ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.help),
-                  tooltip: 'Show tutorial',
-                  onPressed: () {
-                    ShowCaseWidget.of(context).startShowCase([_one, _two]);
-                  },
-                )
-              ],
-            ),
-            onDrawerChanged: (bool isOpened){
-              print('drawer opened = $isOpened');
-            },
-            drawer: _buildDrawer(context),
-            body: _buildBody(context),
-          ),
+              drawer: _buildDrawer(context),
+              body: _buildBody(context),
+              bottomNavigationBar: ConvexAppBar(
+                items: [
+                  TabItem(icon: Icons.home, title: 'Lists'),
+                  TabItem(icon: Icons.calendar_month, title: 'Calendar')
+                ],
+                onTap: (int index) {
+                  setState(() {
+                    displayMode = index == 0 ? DisplayMode.lists : DisplayMode.calendar;
+                  });
+                },
+              )),
         );
       }),
     );
@@ -209,26 +220,30 @@ class _HomePageState extends State<HomePage> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (lists!.isEmpty) {
-      return Center(
-        child: Showcase(
-          key: _one,
-          description: 'Click here to create a new list',
-          onBarrierClick: (){
-            ShowCaseWidget.of(context).next();
-          },
-          disposeOnTap: false,
-          onTargetClick: () {
-            ShowCaseWidget.of(context).dismiss();
-            _tryAddList(context, withShowcase: true);
-          },
-          child: TextButton.icon(
-              onPressed: () => _tryAddList(context), icon: const Icon(Icons.add), label: const Text('Add List')),
-        ),
-      );
-    }
+    if(displayMode == DisplayMode.lists){
+      if (lists!.isEmpty) {
+        return Center(
+          child: Showcase(
+            key: _one,
+            description: 'Click here to create a new list',
+            onBarrierClick: () {
+              ShowCaseWidget.of(context).next();
+            },
+            disposeOnTap: false,
+            onTargetClick: () {
+              ShowCaseWidget.of(context).dismiss();
+              _tryAddList(context, withShowcase: true);
+            },
+            child: TextButton.icon(
+                onPressed: () => _tryAddList(context), icon: const Icon(Icons.add), label: const Text('Add List')),
+          ),
+        );
+      }
 
-    return ListerPage(lists![currentIndex], key: ValueKey(lists![currentIndex].id));
+      return ListerPage(lists![currentIndex], key: ValueKey(lists![currentIndex].id));
+    } else {
+      return CalendarTab();
+    }
   }
 
   Future<void> _tryAddList(BuildContext context, {bool withShowcase = false}) async {
