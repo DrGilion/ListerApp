@@ -10,27 +10,36 @@ import 'package:lister_app/util/utils.dart';
 class ItemDetailsPage extends StatefulWidget {
   static const String routeName = "ItemDetailsPage";
 
-  final ListerItem listerItem;
+  final ListerItem? listerItem;
+  final int? itemId;
 
-  const ItemDetailsPage(this.listerItem, {super.key});
+  const ItemDetailsPage({this.listerItem, this.itemId, super.key}) : assert(listerItem != null || itemId != null);
 
   @override
   _ItemDetailsPageState createState() => _ItemDetailsPageState();
 }
 
 class _ItemDetailsPageState extends State<ItemDetailsPage> {
-  late ListerItem listerItem;
+  ListerItem? listerItem;
 
   @override
   void initState() {
     super.initState();
 
-    listerItem = widget.listerItem;
+    if (widget.listerItem != null) {
+      listerItem = widget.listerItem!;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        PersistenceService.of(context).getListerItem(widget.itemId!).then((value) {
+          value.fold((l) => null, (r) => setState(() => listerItem = r));
+        });
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return listerItem == null ? const SizedBox() : SafeArea(
       child: WillPopScope(
         onWillPop: () async {
           Navigator.of(context).pop(listerItem);
@@ -47,11 +56,11 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   final bool decision = await showConfirmationDialog(
                     context,
                     'Delete item',
-                    'Are you sure that you want to delete the item "${listerItem.name}"?',
+                    'Are you sure that you want to delete the item "${listerItem!.name}"?',
                   );
 
                   if (decision && mounted) {
-                    PersistenceService.of(context).deleteItem(listerItem.id!).then((value) {
+                    PersistenceService.of(context).deleteItem(listerItem!.id!).then((value) {
                       value.fold((l) {
                         showErrorMessage(context, 'Could not delete item!', l.error, l.stackTrace);
                       }, (r) {
@@ -70,7 +79,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                 children: [
                   TextToTextField(
                     label: 'Name',
-                    initialText: listerItem.name,
+                    initialText: listerItem!.name,
                     onSave: (text) async {
                       if (text.isEmpty) {
                         showErrorMessage(
@@ -78,7 +87,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         return false;
                       }
 
-                      final newItem = await PersistenceService.of(context).updateItemName(listerItem, text);
+                      final newItem = await PersistenceService.of(context).updateItemName(listerItem!, text);
 
                       return newItem.fold((l) {
                         showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
@@ -96,10 +105,10 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       title: const Text("Experienced"),
                       controlAffinity: ListTileControlAffinity.leading,
                       contentPadding: EdgeInsets.zero,
-                      value: listerItem.experienced,
+                      value: listerItem!.experienced,
                       onChanged: (value) {
                         if (value != null) {
-                          PersistenceService.of(context).updateItemExperienced(listerItem, value).then((value) {
+                          PersistenceService.of(context).updateItemExperienced(listerItem!, value).then((value) {
                             value.fold((l) {
                               showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
                             }, (r) {
@@ -116,7 +125,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: RatingBar.builder(
-                        initialRating: listerItem.rating.toDouble(),
+                        initialRating: listerItem!.rating.toDouble(),
                         minRating: 0,
                         direction: Axis.horizontal,
                         allowHalfRating: false,
@@ -126,7 +135,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           color: Colors.amber,
                         ),
                         onRatingUpdate: (rating) {
-                          PersistenceService.of(context).updateItemRating(listerItem, rating.toInt()).then((value) {
+                          PersistenceService.of(context).updateItemRating(listerItem!, rating.toInt()).then((value) {
                             value.fold((l) {
                               showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
                             }, (r) {
@@ -142,9 +151,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   const SizedBox(height: 10),
                   TextToTextField(
                     label: 'Description',
-                    initialText: listerItem.description,
+                    initialText: listerItem!.description,
                     onSave: (text) async {
-                      final newItem = await PersistenceService.of(context).updateItemDescription(listerItem, text);
+                      final newItem = await PersistenceService.of(context).updateItemDescription(listerItem!, text);
 
                       return newItem.fold((l) {
                         showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
@@ -159,11 +168,11 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   ),
                   Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Created on: ${Utils.formatDate(listerItem.createdOn)}')),
+                      child: Text('Created on: ${Utils.formatDate(listerItem!.createdOn)}')),
                   const SizedBox(height: 10),
                   Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Modified on: ${Utils.formatDate(listerItem.modifiedOn)}')),
+                      child: Text('Modified on: ${Utils.formatDate(listerItem!.modifiedOn)}')),
                 ],
               ),
             ),

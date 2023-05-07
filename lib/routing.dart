@@ -22,7 +22,13 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/item/details',
-      builder: (context, state) => ItemDetailsPage(state.extra as ListerItem),
+      builder: (context, state) => ItemDetailsPage(listerItem: state.extra as ListerItem),
+    ),
+    GoRoute(
+      path: '/item/:itemId',
+      builder: (context, state) {
+        return ItemDetailsPage(itemId: int.parse(state.pathParameters['itemId']!));
+      },
     ),
   ],
 );
