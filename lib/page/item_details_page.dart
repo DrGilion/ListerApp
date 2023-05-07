@@ -50,7 +50,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     'Are you sure that you want to delete the item "${listerItem.name}"?',
                   );
 
-                  if (decision) {
+                  if (decision && mounted) {
                     PersistenceService.of(context).deleteItem(listerItem.id!).then((value) {
                       value.fold((l) {
                         showErrorMessage(context, 'Could not delete item!', l.error, l.stackTrace);

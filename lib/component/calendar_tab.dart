@@ -7,7 +7,7 @@ import 'package:lister_app/service/persistence_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarTab extends StatefulWidget {
-  const CalendarTab({Key? key}) : super(key: key);
+  const CalendarTab({super.key});
 
   @override
   State<CalendarTab> createState() => _CalendarTabState();
@@ -53,7 +53,7 @@ class _CalendarTabState extends State<CalendarTab> {
             focusedDay: _focusedDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
             availableCalendarFormats: const {CalendarFormat.month: 'Month'},
-            calendarStyle: CalendarStyle(markersAlignment: Alignment.bottomRight),
+            calendarStyle: const CalendarStyle(markersAlignment: Alignment.bottomRight),
             calendarBuilders: CalendarBuilders(
               dowBuilder: (context, day) {
                 if ([DateTime.saturday, DateTime.sunday].contains(day.weekday)) {

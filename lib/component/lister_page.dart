@@ -1,4 +1,6 @@
+import 'package:dartz/dartz.dart' show Tuple2;
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
@@ -75,10 +77,10 @@ class _ListerPageState extends State<ListerPage> {
           SortButton(
             filter: _filter,
             optionsMap: const {
-              'name': 'Name',
-              'rating': 'Rating',
-              'experienced': 'Done/ Not Done',
-              'modified_on': 'Modification time'
+              'name': Tuple2(FontAwesomeIcons.font, 'Name'),
+              'rating': Tuple2(FontAwesomeIcons.star, 'Rating'),
+              'experienced': Tuple2(FontAwesomeIcons.check, 'Done/ Not Done'),
+              'modified_on': Tuple2(FontAwesomeIcons.calendar, 'Modification time'),
             },
           )
         ],

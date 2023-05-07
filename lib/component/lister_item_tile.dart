@@ -60,7 +60,7 @@ class _ListerItemTileState extends State<ListerItemTile> {
                 'Are you sure that you want to delete the item "${listItem.name}"?',
               );
 
-              if (decision) {
+              if (decision && mounted) {
                 PersistenceService.of(context).deleteItem(listItem.id!).then((value) {
                   value.fold((l) {
                     showErrorMessage(context, 'Could not delete item!', l.error, l.stackTrace);
@@ -74,7 +74,12 @@ class _ListerItemTileState extends State<ListerItemTile> {
         });
       },
       child: ListTile(
-        leading: listItem.experienced ? const Icon(Icons.check, color: Colors.green) : const SizedBox(),
+        leading: listItem.experienced ? Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.check, color: Colors.green),
+          ],
+        ) : const SizedBox(),
         title: Text(listItem.name),
         subtitle: Linkify(text: listItem.description, maxLines: 2, overflow: TextOverflow.ellipsis),
         trailing: Row(
@@ -85,13 +90,13 @@ class _ListerItemTileState extends State<ListerItemTile> {
             const Icon(
               Icons.star,
               size: 12,
-              color: Colors.grey,
+              color: Colors.amber,
             )
           ],
         ),
         onTap: () async {
           final returnedItem = await context.push('/item/details', extra: listItem);
-          if (returnedItem == null) {
+          if (returnedItem == null && mounted ) {
             ItemRemovedNotification(listItem.id!).dispatch(context);
           } else {
             setState(() {

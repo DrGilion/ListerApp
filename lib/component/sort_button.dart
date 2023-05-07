@@ -1,11 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lister_app/filter/base_filter.dart';
 import 'package:lister_app/filter/sort_direction.dart';
 
 class SortButton<F extends BaseFilter> extends StatelessWidget {
   final F filter;
-  final Map<String, String> optionsMap;
+  final Map<String, Tuple2<IconData,String>> optionsMap;
 
   const SortButton({super.key, required this.filter, required this.optionsMap});
 
@@ -28,7 +29,13 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                       ...optionsMap.entries.map((e) => RadioListTile<String>(
                             groupValue: selectedSortField,
                             value: e.key,
-                            title: Text(e.value),
+                            title: Row(
+                              children: [
+                                Icon(e.value.value1, color: Colors.black),
+                                const SizedBox(width: 16),
+                                Text(e.value.value2),
+                              ],
+                            ),
                             onChanged: (String? value) {
                               setStateFn(() {
                                 selectedSortField = value!;
@@ -39,7 +46,13 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                       RadioListTile<SortDirection>(
                         groupValue: selectedSortDirection,
                         value: SortDirection.asc,
-                        title: const Text('Ascending'),
+                        title: Row(
+                          children: const [
+                            Icon(FontAwesomeIcons.arrowUp, color: Colors.black),
+                            SizedBox(width: 16),
+                            Text('Ascending'),
+                          ],
+                        ),
                         onChanged: (SortDirection? value) {
                           setStateFn(() {
                             selectedSortDirection = value!;
@@ -49,7 +62,13 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                       RadioListTile<SortDirection>(
                         groupValue: selectedSortDirection,
                         value: SortDirection.desc,
-                        title: const Text('Descending'),
+                        title: Row(
+                          children: const [
+                            Icon(FontAwesomeIcons.arrowDownLong, color: Colors.black),
+                            SizedBox(width: 16),
+                            Text('Descending'),
+                          ],
+                        ),
                         onChanged: (SortDirection? value) {
                           setStateFn(() {
                             selectedSortDirection = value!;

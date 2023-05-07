@@ -69,7 +69,7 @@ class _ListerAppState extends State<ListerApp> {
         supportedLocales: const [
           Locale('en', ''), // English, no country code
         ],
-        theme: ThemeData(primarySwatch: Colors.blue, dividerTheme: const DividerThemeData(space: 0)),
+        theme: ThemeData(dividerTheme: const DividerThemeData(space: 0), useMaterial3: true),
         routerConfig: router,
       ),
     );
