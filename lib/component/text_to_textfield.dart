@@ -43,77 +43,57 @@ class _TextToTextFieldState extends State<TextToTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        _buildInput(),
-        _buildButtons(),
-      ],
-    );
-  }
-
-  Widget _buildInput() {
     return _isEditingText
-        ? Expanded(
-            child: TextField(
-              focusNode: _focusNode,
-              controller: _editingController,
-              minLines: widget.bigbox ? 3 : 1,
-              maxLines: widget.bigbox ? null : 1,
-              autofocus: true,
-              keyboardType: widget.customInputType,
-              decoration: InputDecoration(
-                labelText: widget.label,
-                labelStyle: const TextStyle(color: Colors.grey),
-              ),
-              onSubmitted: (newValue) {
-                _save();
-              },
-            ),
-          )
-        : Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ? TextField(
+          focusNode: _focusNode,
+          controller: _editingController,
+          minLines: widget.bigbox ? 3 : 1,
+          maxLines: widget.bigbox ? null : 1,
+          autofocus: true,
+          keyboardType: widget.customInputType,
+          decoration: InputDecoration(
+            labelText: widget.label,
+            labelStyle: const TextStyle(color: Colors.grey),
+            border: const OutlineInputBorder(),
+            suffix: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  widget.label,
-                  style: const TextStyle(color: Colors.grey),
-                  maxLines: widget.bigbox ? null : 1,
-                  overflow: TextOverflow.ellipsis,
+                IconButton(
+                  icon: const Icon(Icons.check, color: Colors.green),
+                  tooltip: MaterialLocalizations.of(context).saveButtonLabel,
+                  onPressed: _save,
                 ),
-                Linkify(
-                    text: widget.initialText != null && widget.initialText!.isNotEmpty ? widget.initialText! : '',
-                    style: const TextStyle(color: Colors.black, fontSize: 18.0),
-                    options: const LinkifyOptions(humanize: false),
-                    onOpen: (link) async {
-                      if (await canLaunchUrl(Uri.parse(link.url))) {
-                        await launchUrl(Uri.parse(link.url));
-                      } else {
-                        throw 'Could not launch $link';
-                      }
-                    })
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.grey),
+                  tooltip: MaterialLocalizations.of(context).cancelButtonLabel,
+                  onPressed: _cancel,
+                )
               ],
             ),
-          );
-  }
-
-  Widget _buildButtons() {
-    return _isEditingText
-        ? Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.check, color: Colors.green),
-                tooltip: MaterialLocalizations.of(context).saveButtonLabel,
-                onPressed: _save,
-              ),
-              IconButton(
-                icon: const Icon(Icons.close, color: Colors.grey),
-                tooltip: MaterialLocalizations.of(context).cancelButtonLabel,
-                onPressed: _cancel,
-              )
-            ],
-          )
-        : IconButton(icon: const Icon(Icons.edit, color: Colors.grey), tooltip: 'Edit', onPressed: _edit);
+          ),
+          onSubmitted: (newValue) {
+            _save();
+          },
+        )
+        : InputDecorator(
+          decoration: InputDecoration(
+            labelText: widget.label,
+            labelStyle: const TextStyle(color: Colors.grey),
+            border: const OutlineInputBorder(),
+            suffix: IconButton(icon: const Icon(Icons.edit, color: Colors.grey), tooltip: 'Edit', onPressed: _edit),
+          ),
+          child: Linkify(
+              text: widget.initialText != null && widget.initialText!.isNotEmpty ? widget.initialText! : '',
+              style: const TextStyle(color: Colors.black, fontSize: 18.0),
+              options: const LinkifyOptions(humanize: false),
+              onOpen: (link) async {
+                if (await canLaunchUrl(Uri.parse(link.url))) {
+                  await launchUrl(Uri.parse(link.url));
+                } else {
+                  throw 'Could not launch $link';
+                }
+              }),
+        );
   }
 
   void _edit() {
