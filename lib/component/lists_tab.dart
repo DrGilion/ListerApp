@@ -1,8 +1,11 @@
+import 'package:dartz/dartz.dart' show Tuple2;
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
+import 'package:lister_app/component/list_creation_dialog.dart';
 import 'package:lister_app/component/lister_page.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
+import 'package:lister_app/extensions.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:showcaseview/showcaseview.dart';
@@ -51,6 +54,8 @@ class _ListsTabState extends State<ListsTab> {
           child: Scaffold(
             appBar: AppBar(
               title: Text(_getAppbarTitle()),
+              backgroundColor:
+                  lists == null || lists!.isEmpty ? null : lists!.elementAt(currentIndex).color.let((it) => Color(it)),
               leading: Builder(builder: (context) {
                 return Showcase(
                   key: _two,
@@ -59,7 +64,7 @@ class _ListsTabState extends State<ListsTab> {
                   onTargetClick: () async {
                     Scaffold.of(context).openDrawer();
                     await Future.delayed(const Duration(milliseconds: 500));
-                    if(mounted) ShowCaseWidget.of(context).startShowCase([_three]);
+                    if (mounted) ShowCaseWidget.of(context).startShowCase([_three]);
                   },
                   child: Builder(
                     builder: (BuildContext context) {
@@ -80,8 +85,9 @@ class _ListsTabState extends State<ListsTab> {
                   tooltip: 'Show tutorial',
                   onPressed: () {
                     ShowCaseWidget.of(context).startShowCase([
-                      if(lists!.isEmpty) _one,
-                      _two,]);
+                      if (lists!.isEmpty) _one,
+                      _two,
+                    ]);
                   },
                 )
               ],
@@ -111,6 +117,7 @@ class _ListsTabState extends State<ListsTab> {
                 itemCount: lists?.length ?? 0,
                 itemBuilder: (context, index) {
                   return ListTile(
+                    tileColor: Color(lists![index].color),
                     leading: Text('ID: ${lists![index].id}'),
                     title: Text(lists![index].name),
                     trailing: PopupMenuButton<String>(
@@ -124,7 +131,7 @@ class _ListsTabState extends State<ListsTab> {
                             final String? newName = await showTextFieldDialog(context, 'Rename list', 'Name',
                                 initialValue: lists![index].name);
                             if (newName != null && mounted) {
-                              PersistenceService.of(context).renameList(lists![index].id!, newName).then((value) {
+                              PersistenceService.of(context).renameList(lists![index], newName).then((value) {
                                 value.fold((l) {
                                   showErrorMessage(
                                       context, 'Could not rename list ${lists![index].name}', l.error, l.stackTrace);
@@ -225,12 +232,12 @@ class _ListsTabState extends State<ListsTab> {
 
   Future<void> _tryAddList(BuildContext context, {bool withShowcase = false}) async {
     print('add list with showcase? $withShowcase');
-    final String? name = await showTextFieldDialog(context, 'Create List', 'Name');
+    final Tuple2<String, Color>? data = await showListCreationDialog(context, 'Create List', 'Name');
 
-    if (name != null && mounted) {
-      PersistenceService.of(context).createList(name).then((value) {
+    if (data != null && mounted) {
+      PersistenceService.of(context).createList(data.value1, data.value2).then((value) {
         value.fold((l) {
-          showErrorMessage(context, 'Could not create list "$name"!', l.error, l.stackTrace);
+          showErrorMessage(context, 'Could not create list "$data"!', l.error, l.stackTrace);
         }, (r) {
           setState(() {
             lists?.add(r);

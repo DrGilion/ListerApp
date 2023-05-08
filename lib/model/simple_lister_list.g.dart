@@ -6,9 +6,11 @@ part of 'simple_lister_list.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SimpleListerList _$SimpleListerListFromJson(Map<String, dynamic> json) => SimpleListerList(
+SimpleListerList _$SimpleListerListFromJson(Map<String, dynamic> json) =>
+    SimpleListerList(
       json['id'] as int?,
       json['name'] as String,
+      json['color'] as int,
     );
 
 Map<String, dynamic> _$SimpleListerListToJson(SimpleListerList instance) {
@@ -22,5 +24,6 @@ Map<String, dynamic> _$SimpleListerListToJson(SimpleListerList instance) {
 
   writeNotNull('id', instance.id);
   val['name'] = instance.name;
+  val['color'] = instance.color;
   return val;
 }

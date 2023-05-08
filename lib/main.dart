@@ -35,7 +35,7 @@ void main() async {
 
 const Map<int, String> migrationScripts = {
   1: '''
-        CREATE TABLE core_list (id INTEGER PRIMARY KEY, name TEXT);
+        CREATE TABLE core_list (id INTEGER PRIMARY KEY, name TEXT, color INTEGER);
         ''',
   2: '''
         CREATE TABLE core_list_item (id INTEGER PRIMARY KEY, 

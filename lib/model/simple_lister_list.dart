@@ -9,8 +9,9 @@ class SimpleListerList {
   @JsonKey(includeIfNull: false)
   int? id;
   String name;
+  int color;
 
-  SimpleListerList(this.id, this.name);
+  SimpleListerList(this.id, this.name, this.color);
 
   factory SimpleListerList.fromJson(Map<String, dynamic> json) => _$SimpleListerListFromJson(json);
 

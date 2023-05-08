@@ -38,7 +38,7 @@ class PersistenceService {
           orderBy: "$sortField ${describeEnum(sortDirection)}");
       final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
 
-      return Right(ListerList(theList.id!, theList.name, items));
+      return Right(ListerList(theList.id!, theList.name, theList.color, items));
     } catch (e, stack) {
       return Left(Failure(e, stack));
     }
@@ -70,9 +70,9 @@ class PersistenceService {
     }
   }
 
-  Future<Either<Failure, SimpleListerList>> createList(String name) async {
+  Future<Either<Failure, SimpleListerList>> createList(String name, Color color) async {
     try {
-      final newList = SimpleListerList(null, name);
+      final newList = SimpleListerList(null, name, color.value);
       newList.id = await database.insert(SimpleListerList.tableName, newList.toJson());
       return Right(newList);
     } catch (e, stack) {
@@ -80,11 +80,11 @@ class PersistenceService {
     }
   }
 
-  Future<Either<Failure, int>> renameList(int listId, String newName) async {
+  Future<Either<Failure, int>> renameList(SimpleListerList listerList, String newName) async {
     try {
       final int rowsAffected = await database.update(
-          SimpleListerList.tableName, SimpleListerList(listId, newName).toJson(),
-          where: 'id = ?', whereArgs: [listId]);
+          SimpleListerList.tableName, (listerList..name = newName).toJson(),
+          where: 'id = ?', whereArgs: [listerList.id]);
 
       return Right(rowsAffected);
     } catch (e, stack) {
