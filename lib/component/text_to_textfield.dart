@@ -51,6 +51,27 @@ class _TextToTextFieldState extends State<TextToTextField> {
           maxLines: widget.bigbox ? null : 1,
           autofocus: true,
           keyboardType: widget.customInputType,
+          contextMenuBuilder: (context, editableTextState){
+            final TextEditingValue value =
+                editableTextState.textEditingValue;
+            final List<ContextMenuButtonItem> buttonItems =
+                editableTextState.contextMenuButtonItems;
+
+              buttonItems.insert(
+                  0,
+                  ContextMenuButtonItem(
+                    label: 'Wow!',
+                    onPressed: () {
+                      ContextMenuController.removeAny();
+                      //TODO: do something interesting
+                    },
+                  ));
+
+            return AdaptiveTextSelectionToolbar.buttonItems(
+              anchors: editableTextState.contextMenuAnchors,
+              buttonItems: buttonItems,
+            );
+          },
           decoration: InputDecoration(
             labelText: widget.label,
             labelStyle: const TextStyle(color: Colors.grey),

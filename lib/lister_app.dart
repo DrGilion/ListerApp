@@ -32,7 +32,7 @@ class _ListerAppState extends State<ListerApp> {
     quickActions.initialize((String shortcutType) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         navigatorKey.currentContext?.push<ListerItem>(Uri(path: '/item/create').toString()).then((ListerItem? newItem) {
-          if(newItem != null){
+          if (newItem != null) {
             ItemAddedNotifier.of(navigatorKey.currentContext!).add(newItem);
           }
         });
@@ -69,7 +69,9 @@ class _ListerAppState extends State<ListerApp> {
         supportedLocales: const [
           Locale('en', ''), // English, no country code
         ],
-        theme: ThemeData(dividerTheme: const DividerThemeData(space: 0), useMaterial3: true),
+        theme: ThemeData(
+          dividerTheme: const DividerThemeData(space: 0),
+        ),
         routerConfig: router,
       ),
     );
