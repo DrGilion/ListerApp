@@ -5,6 +5,7 @@ import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/page/home_page.dart';
 import 'package:lister_app/page/item_creation_page.dart';
 import 'package:lister_app/page/item_details_page.dart';
+import 'package:lister_app/page/settings_page.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -28,6 +29,13 @@ final router = GoRouter(
       path: '/item/:itemId',
       builder: (context, state) {
         return ItemDetailsPage(itemId: int.parse(state.pathParameters['itemId']!));
+      },
+    ),
+    GoRoute(
+      path: '/settings',
+      name: 'settings',
+      builder: (context, state) {
+        return const SettingsPage();
       },
     ),
   ],

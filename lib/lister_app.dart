@@ -10,6 +10,7 @@ import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/routing.dart';
 import 'package:lister_app/service/import_export_service.dart';
 import 'package:lister_app/service/persistence_service.dart';
+import 'package:lister_app/voice_assist/commands.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:sqflite/sqflite.dart';
@@ -56,6 +57,7 @@ class _ListerAppState extends State<ListerApp> {
       providers: [
         Provider(create: (context) => PersistenceService(widget.database)),
         Provider(create: (context) => ImportExportService()),
+        Provider(create: (context) => Commands()),
         ChangeNotifierProvider(create: (_) => ItemFilter()),
         ChangeNotifierProvider(create: (_) => ItemAddedNotifier()),
       ],

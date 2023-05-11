@@ -2,6 +2,10 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/calendar_tab.dart';
 import 'package:lister_app/component/lists_tab.dart';
+import 'package:lister_app/voice_assist/command_service.dart';
+import 'package:lister_app/voice_assist/commands.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/';
@@ -20,19 +24,74 @@ enum DisplayMode {
 class _HomePageState extends State<HomePage> {
   DisplayMode displayMode = DisplayMode.lists;
 
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _initSpeech();
+  }
+
+  /// This has to happen only once per app
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize(onStatus: (newStatus) {
+      setState(() {});
+    });
+    setState(() {});
+  }
+
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  /// Manually stop the active speech recognition session
+  /// Note that there are also timeouts that each platform enforces
+  /// and the SpeechToText plugin supports setting timeouts on the
+  /// listen method.
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  /// This is the callback that the SpeechToText plugin calls when
+  /// the platform returns recognized words.
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    if (result.finalResult) {
+      print(result);
+      //get recognized words and turn them into commands
+      final commands = CommandService.parseTextToCommands(result.recognizedWords);
+      Commands.of(context)
+        ..initCommands(commands)
+        ..executeCommands(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
             body: _buildBody(context),
             bottomNavigationBar: ConvexAppBar(
-              items: const [
+              style: TabStyle.fixedCircle,
+              items: [
                 TabItem(icon: Icons.home, title: 'Lists'),
+                TabItem(
+                    icon: _speechEnabled ? (_speechToText.isNotListening ? Icons.mic_off : Icons.mic) : Icons.close),
                 TabItem(icon: Icons.calendar_month, title: 'Calendar')
               ],
               onTap: (int index) {
                 setState(() {
-                  displayMode = index == 0 ? DisplayMode.lists : DisplayMode.calendar;
+                  if (index == 0) {
+                    displayMode = DisplayMode.lists;
+                  } else if (index == 1) {
+                    _speechToText.isNotListening ? _startListening() : _stopListening();
+                  } else if (index == 2) {
+                    displayMode = DisplayMode.calendar;
+                  }
                 });
               },
             )));

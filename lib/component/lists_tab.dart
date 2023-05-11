@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart' show Tuple2;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/list_creation_dialog.dart';
@@ -88,6 +89,13 @@ class _ListsTabState extends State<ListsTab> {
                       if (lists!.isEmpty) _one,
                       _two,
                     ]);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  tooltip: 'Show settings',
+                  onPressed: () {
+                    context.push('/settings');
                   },
                 )
               ],
