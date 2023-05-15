@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 
 abstract class Command<T> {
-  String rawCommand;
+  /// Does the given text match the syntax of the command?
+  bool matchesCommand(String text);
 
-  Command(this.rawCommand);
-
-  Future<T> executeCommand(BuildContext context) {
-    print("Executing command: $rawCommand");
-    return defineCommand(context);
-  }
-
-  Future<T> defineCommand(BuildContext context);
+  /// actual definition of the command
+  Future<T> Function(BuildContext) generateCommand(String rawCommand);
 }

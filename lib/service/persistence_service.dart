@@ -44,10 +44,33 @@ class PersistenceService {
     }
   }
 
+  Future<Either<Failure, SimpleListerList>> findSimpleList({String? name}) async {
+    try {
+      final Map<String, Object?> result =
+          (await database.query(SimpleListerList.tableName, where: 'name = ?', whereArgs: [name])).first;
+      final theList = SimpleListerList.fromJson(result);
+
+      return Right(theList);
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
+  }
+
   Future<Either<Failure, ListerItem>> getListerItem(int itemId) async {
     try {
       final Map<String, Object?> result =
           (await database.query(ListerItem.tableName, where: 'id = ?', whereArgs: [itemId])).first;
+
+      return Right(ListerItem.fromJson(result));
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
+  }
+
+  Future<Either<Failure, ListerItem>> findListerItemByName(String name) async {
+    try {
+      final Map<String, Object?> result =
+          (await database.query(ListerItem.tableName, where: 'name LIKE ?', whereArgs: [name])).first;
 
       return Right(ListerItem.fromJson(result));
     } catch (e, stack) {

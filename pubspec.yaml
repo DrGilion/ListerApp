@@ -26,6 +26,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   any_link_preview: 3.0.0
+  collection: any
   convex_bottom_bar: 3.2.0
   cupertino_icons: 1.0.5
   dartz: 0.10.1

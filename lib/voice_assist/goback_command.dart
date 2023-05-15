@@ -5,11 +5,16 @@ import 'package:lister_app/voice_assist/command.dart';
 /// Navigate to a specific place in the application
 class GoBackCommand extends Command<void> {
 
-  GoBackCommand(super.rawCommand);
+  @override
+  Future Function(BuildContext) generateCommand(String rawCommand) {
+    return (context) {
+      context.pop();
+      return Future.value();
+    };
+  }
 
   @override
-  Future defineCommand(BuildContext context) {
-    context.pop();
-    return Future.value();
+  bool matchesCommand(String text) {
+    return text == 'go back';
   }
 }

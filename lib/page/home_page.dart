@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lister_app/component/calendar_tab.dart';
 import 'package:lister_app/component/lists_tab.dart';
 import 'package:lister_app/voice_assist/command_service.dart';
+import 'package:lister_app/voice_assist/commandable_mixin.dart';
 import 'package:lister_app/voice_assist/commands.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -21,7 +22,7 @@ enum DisplayMode {
   calendar;
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>  with Commandable{
   DisplayMode displayMode = DisplayMode.lists;
 
   final SpeechToText _speechToText = SpeechToText();
@@ -61,7 +62,6 @@ class _HomePageState extends State<HomePage> {
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
     if (result.finalResult) {
-      print(result);
       //get recognized words and turn them into commands
       final commands = CommandService.parseTextToCommands(result.recognizedWords);
       Commands.of(context)
@@ -78,10 +78,10 @@ class _HomePageState extends State<HomePage> {
             bottomNavigationBar: ConvexAppBar(
               style: TabStyle.fixedCircle,
               items: [
-                TabItem(icon: Icons.home, title: 'Lists'),
+                const TabItem(icon: Icons.home, title: 'Lists'),
                 TabItem(
                     icon: _speechEnabled ? (_speechToText.isNotListening ? Icons.mic_off : Icons.mic) : Icons.close),
-                TabItem(icon: Icons.calendar_month, title: 'Calendar')
+                const TabItem(icon: Icons.calendar_month, title: 'Calendar')
               ],
               onTap: (int index) {
                 setState(() {
