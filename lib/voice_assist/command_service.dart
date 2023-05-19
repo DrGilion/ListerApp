@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lister_app/voice_assist/command.dart';
-import 'package:lister_app/voice_assist/create_command.dart';
-import 'package:lister_app/voice_assist/goback_command.dart';
-import 'package:lister_app/voice_assist/goto_command.dart';
-import 'package:lister_app/voice_assist/open_command.dart';
-import 'package:lister_app/voice_assist/switch_list_command.dart';
+import 'package:lister_app/voice_assist/command/command.dart';
+import 'package:lister_app/voice_assist/command/create_command.dart';
+import 'package:lister_app/voice_assist/command/goback_command.dart';
+import 'package:lister_app/voice_assist/command/goto_command.dart';
+import 'package:lister_app/voice_assist/command/open_command.dart';
+import 'package:lister_app/voice_assist/command/switch_list_command.dart';
 
 /// service for handling the commands for voice assistant
 class CommandService {

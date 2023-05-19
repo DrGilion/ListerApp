@@ -11,6 +11,7 @@ import 'package:lister_app/routing.dart';
 import 'package:lister_app/service/import_export_service.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/viewmodel/list_navigation_data.dart';
+import 'package:lister_app/viewmodel/top_navigation_data.dart';
 import 'package:lister_app/voice_assist/commands.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
@@ -61,6 +62,7 @@ class _ListerAppState extends State<ListerApp> {
         ChangeNotifierProvider(create: (context) => Commands()),
         ChangeNotifierProvider(create: (_) => ItemFilter()),
         ChangeNotifierProvider(create: (_) => ItemAddedNotifier()),
+        ChangeNotifierProvider(create: (_) => TopNavigationData()),
         ChangeNotifierProvider(create: (_) => ListNavigationData()),
       ],
       builder: (context, _) => MaterialApp.router(

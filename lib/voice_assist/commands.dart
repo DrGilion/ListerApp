@@ -20,8 +20,8 @@ class Commands extends ChangeNotifier{
     if(commandsLeft){
       lastResult = await commands[currentCommandIndex](context);
       currentCommandIndex++;
-      await Future.delayed(const Duration(seconds: 1));
       notifyListeners();
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 }

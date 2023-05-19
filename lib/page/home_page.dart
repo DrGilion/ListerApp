@@ -2,9 +2,12 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/calendar_tab.dart';
 import 'package:lister_app/component/lists_tab.dart';
+import 'package:lister_app/viewmodel/display_mode.dart';
+import 'package:lister_app/viewmodel/top_navigation_data.dart';
 import 'package:lister_app/voice_assist/command_service.dart';
 import 'package:lister_app/voice_assist/commandable_mixin.dart';
 import 'package:lister_app/voice_assist/commands.dart';
+import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -17,14 +20,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-enum DisplayMode {
-  lists,
-  calendar;
-}
-
-class _HomePageState extends State<HomePage>  with Commandable{
-  DisplayMode displayMode = DisplayMode.lists;
-
+class _HomePageState extends State<HomePage> with Commandable {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
 
@@ -86,11 +82,11 @@ class _HomePageState extends State<HomePage>  with Commandable{
               onTap: (int index) {
                 setState(() {
                   if (index == 0) {
-                    displayMode = DisplayMode.lists;
+                    TopNavigationData.of(context).displayMode = DisplayMode.lists;
                   } else if (index == 1) {
                     _speechToText.isNotListening ? _startListening() : _stopListening();
                   } else if (index == 2) {
-                    displayMode = DisplayMode.calendar;
+                    TopNavigationData.of(context).displayMode = DisplayMode.calendar;
                   }
                 });
               },
@@ -98,11 +94,13 @@ class _HomePageState extends State<HomePage>  with Commandable{
   }
 
   Widget _buildBody(BuildContext context) {
-    switch (displayMode) {
-      case DisplayMode.lists:
-        return const ListsTab();
-      case DisplayMode.calendar:
-        return const CalendarTab();
-    }
+    return Consumer<TopNavigationData>(builder: (context, data, _){
+      switch (data.displayMode) {
+        case DisplayMode.lists:
+          return const ListsTab();
+        case DisplayMode.calendar:
+          return const CalendarTab();
+      }
+    },);
   }
 }

@@ -9,7 +9,7 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage>  with Commandable{
+class _SettingsPageState extends State<SettingsPage> with Commandable{
   @override
   Widget build(BuildContext context) {
     return SafeArea(
