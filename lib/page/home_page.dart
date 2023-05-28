@@ -2,6 +2,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/calendar_tab.dart';
 import 'package:lister_app/component/lists_tab.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/viewmodel/display_mode.dart';
 import 'package:lister_app/viewmodel/top_navigation_data.dart';
 import 'package:lister_app/voice_assist/command_service.dart';
@@ -74,7 +75,7 @@ class _HomePageState extends State<HomePage> with Commandable {
             bottomNavigationBar: ConvexAppBar(
               style: TabStyle.fixedCircle,
               items: [
-                const TabItem(icon: Icons.home, title: 'Lists'),
+                TabItem(icon: Icons.home, title: S.current.lists),
                 TabItem(
                     icon: _speechEnabled ? (_speechToText.isNotListening ? Icons.mic_off : Icons.mic) : Icons.close),
                 const TabItem(icon: Icons.calendar_month, title: 'Calendar')

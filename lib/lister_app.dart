@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lister_app/filter/item_filter.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/main.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/notification/item_added_notifier.dart';
@@ -68,13 +69,12 @@ class _ListerAppState extends State<ListerApp> {
       builder: (context, _) => MaterialApp.router(
         title: 'Lister App',
         localizationsDelegates: const [
+          S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('en', ''), // English, no country code
-        ],
+        supportedLocales: S.delegate.supportedLocales,
         theme: ThemeData(
           dividerTheme: const DividerThemeData(space: 0),
         ),

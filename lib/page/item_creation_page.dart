@@ -70,9 +70,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
 
   /// Each time to start a speech recognition session
   void _startListening() async {
-    var locales = await _speechToText.locales();
-    print(locales.map((e) => e.localeId).toList());
-    await _speechToText.listen(onResult: _onSpeechResult, listenMode: ListenMode.dictation, localeId: 'de_DE');
+    await _speechToText.listen(onResult: _onSpeechResult, listenMode: ListenMode.dictation);
     setState(() {});
   }
 
