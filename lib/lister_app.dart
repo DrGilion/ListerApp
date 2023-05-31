@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lister_app/filter/item_filter.dart';
 import 'package:lister_app/generated/l10n.dart';
@@ -34,13 +35,18 @@ class _ListerAppState extends State<ListerApp> {
 
     const QuickActions quickActions = QuickActions();
     quickActions.initialize((String shortcutType) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        navigatorKey.currentContext?.push<ListerItem>(Uri(path: '/item/create').toString()).then((ListerItem? newItem) {
-          if (newItem != null) {
-            ItemAddedNotifier.of(navigatorKey.currentContext!).add(newItem);
-          }
-        });
-      });
+      switch (shortcutType) {
+        case 'add_item':
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            navigatorKey.currentContext
+                ?.push<ListerItem>(Uri(path: '/item/create').toString())
+                .then((ListerItem? newItem) {
+              if (newItem != null) {
+                ItemAddedNotifier.of(navigatorKey.currentContext!).add(newItem);
+              }
+            });
+          });
+      }
     });
 
     quickActions.setShortcutItems(<ShortcutItem>[
@@ -73,6 +79,7 @@ class _ListerAppState extends State<ListerApp> {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
+          LocaleNamesLocalizationsDelegate(),
         ],
         supportedLocales: S.delegate.supportedLocales,
         theme: ThemeData(

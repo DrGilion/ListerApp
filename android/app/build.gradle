@@ -38,6 +38,7 @@ android {
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        resourceConfigurations += ["en", "de"]
     }
 
     buildTypes {

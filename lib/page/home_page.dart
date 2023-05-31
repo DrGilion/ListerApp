@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> with Commandable {
             bottomNavigationBar: ConvexAppBar(
               style: TabStyle.fixedCircle,
               items: [
-                TabItem(icon: Icons.home, title: S.current.lists),
+                TabItem(icon: Icons.home, title: S.of(context).lists),
                 TabItem(
                     icon: _speechEnabled ? (_speechToText.isNotListening ? Icons.mic_off : Icons.mic) : Icons.close),
                 const TabItem(icon: Icons.calendar_month, title: 'Calendar')
