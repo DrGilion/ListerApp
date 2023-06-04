@@ -131,6 +131,16 @@ class Translations {
     );
   }
 
+  /// `Update`
+  String get update {
+    return Intl.message(
+      'Update',
+      name: 'update',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Month`
   String get month {
     return Intl.message(

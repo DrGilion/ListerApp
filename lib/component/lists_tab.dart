@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart' show Tuple2;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/list_creation_dialog.dart';
@@ -55,6 +56,7 @@ class _ListsTabState extends State<ListsTab> {
         return Consumer<ListNavigationData>(
           builder: (BuildContext context, ListNavigationData value, Widget? child) => SafeArea(
             child: Scaffold(
+              key: _scaffoldKey,
               appBar: AppBar(
                 title: Text(_getAppbarTitle(context)),
                 backgroundColor: _getBackgroundColor(context),
@@ -92,11 +94,39 @@ class _ListsTabState extends State<ListsTab> {
                       ]);
                     },
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.settings),
-                    tooltip: Translations.of(context).settings_show,
-                    onPressed: () {
-                      context.push('/settings');
+                  PopupMenuButton(
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem(
+                        child: ListTile(
+                          leading: const Icon(Icons.settings),
+                          title: Text(Translations.of(context).settings_show),
+                        ),
+                      ),
+                      /*PopupMenuItem(
+                        child: ListTile(
+                          leading: const Icon(Icons.update),
+                          title: Text(Translations.of(context).update),
+                        ),
+                      ),*/
+                    ],
+                    onSelected: (value) async {
+                      switch (value) {
+                        case PopupOptions.settings:
+                          context.push('/settings');
+                          break;
+
+                        case PopupOptions.update:
+                          if (_updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
+                            InAppUpdate.startFlexibleUpdate().then((_) {
+                              setState(() {
+                                _flexibleUpdateAvailable = true;
+                              });
+                            }).catchError((e) {
+                              showSnack(e.toString());
+                            });
+                          }
+                          break;
+                      }
                     },
                   )
                 ],
@@ -280,6 +310,29 @@ class _ListsTabState extends State<ListsTab> {
           });
         });
       });
+    }
+  }
+
+  AppUpdateInfo? _updateInfo;
+
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  bool _flexibleUpdateAvailable = false;
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> checkForUpdate() async {
+    InAppUpdate.checkForUpdate().then((info) {
+      setState(() {
+        _updateInfo = info;
+      });
+    }).catchError((e) {
+      showSnack(e.toString());
+    });
+  }
+
+  void showSnack(String text) {
+    if (_scaffoldKey.currentContext != null) {
+      ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(content: Text(text)));
     }
   }
 }

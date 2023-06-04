@@ -91,6 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Klicke hier, um eine neue Liste zu erstellen"),
         "tutorial_show":
             MessageLookupByLibrary.simpleMessage("Tutorial zeigen"),
+        "update": MessageLookupByLibrary.simpleMessage("Update"),
         "updateItem_error": MessageLookupByLibrary.simpleMessage(
             "Eintrag-Aktualisierung fehlgeschlagen!"),
         "url_preview_error": m5,

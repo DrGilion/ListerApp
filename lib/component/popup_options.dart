@@ -4,4 +4,6 @@ class PopupOptions {
 
   static const delete = 'delete';
   static const rename = "rename";
+  static const settings = "settings";
+  static const update = "update";
 }
