@@ -1,9 +1,9 @@
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:linkify/linkify.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
+import 'package:lister_app/component/paged_url_preview.dart';
 import 'package:lister_app/component/text_to_textfield.dart';
 import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/lister_item.dart';
@@ -161,29 +161,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        ...(linkify(listerItem!.description).whereType<UrlElement>().map((e) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AnyLinkPreview(
-                                link: e.url,
-                                displayDirection: UIDirection.uiDirectionHorizontal,
-                                showMultimedia: true,
-                                bodyMaxLines: 3,
-                                previewHeight: 105,
-                                bodyTextOverflow: TextOverflow.ellipsis,
-                                titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                                bodyStyle: const TextStyle(color: Colors.grey, fontSize: 12),
-                                errorBody: e.url,
-                                errorTitle: e.url,
-                                errorWidget: Container(
-                                  color: Colors.grey[300],
-                                  child: Text(Translations.of(context).url_preview_error(e.url)),
-                                ),
-                                cache: const Duration(days: 7),
-                                backgroundColor: Colors.grey[300],
-                                borderRadius: 16,
-                                boxShadow: const [BoxShadow(blurRadius: 3, color: Colors.grey)],
-                              ),
-                            ))),
+                        PagedUrlPreview(
+                            urls:
+                                (linkify(listerItem!.description).whereType<UrlElement>().map((e) => e.url).toList())),
                         const SizedBox(height: 10),
                         TextToTextField(
                           label: Translations.of(context).description,
