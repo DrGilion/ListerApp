@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TextToTextField extends StatefulWidget {
@@ -101,7 +102,7 @@ class _TextToTextFieldState extends State<TextToTextField> {
             labelText: widget.label,
             labelStyle: const TextStyle(color: Colors.grey),
             border: const OutlineInputBorder(),
-            suffix: IconButton(icon: const Icon(Icons.edit, color: Colors.grey), tooltip: 'Edit', onPressed: _edit),
+            suffix: IconButton(icon: const Icon(Icons.edit, color: Colors.grey), tooltip: Translations.of(context).edit, onPressed: _edit),
           ),
           child: Linkify(
               text: widget.initialText != null && widget.initialText!.isNotEmpty ? widget.initialText! : '',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lister_app/generated/l10n.dart';
 
 Future<bool> showConfirmationDialog(BuildContext context, String header, String content) async {
   return await showDialog<bool>(
@@ -12,13 +13,13 @@ Future<bool> showConfirmationDialog(BuildContext context, String header, String 
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
-                  child: const Text('No'),
+                  child: Text(Translations.of(context).no),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
-                  child: const Text('Yes'),
+                  child: Text(Translations.of(context).yes),
                 ),
               ],
             );

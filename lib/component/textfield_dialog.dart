@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lister_app/generated/l10n.dart';
 
 Future<String?> showTextFieldDialog(BuildContext context, String title, String label,
     {String? initialValue, String? Function(String?)? customValidator}) async {
@@ -19,7 +20,7 @@ Future<String?> showTextFieldDialog(BuildContext context, String title, String l
                 validator: customValidator ??
                     (value) {
                       if (value == null || value.isEmpty) {
-                        return 'The text must not be empty';
+                        return Translations.of(context).validation_empty;
                       } else {
                         return null;
                       }

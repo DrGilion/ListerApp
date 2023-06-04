@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lister_app/filter/base_filter.dart';
 import 'package:lister_app/filter/sort_direction.dart';
+import 'package:lister_app/generated/l10n.dart';
 
 class SortButton<F extends BaseFilter> extends StatelessWidget {
   final F filter;
@@ -21,7 +22,7 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text('Sort by'),
+                title: Text(Translations.of(context).sortBy),
                 content: StatefulBuilder(builder: (context, setStateFn) {
                   return Column(
                     mainAxisSize: MainAxisSize.min,
@@ -49,10 +50,10 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                         value: SortDirection.asc,
                         contentPadding: EdgeInsets.zero,
                         title: Row(
-                          children: const [
-                            Icon(FontAwesomeIcons.arrowUp, color: Colors.black),
-                            SizedBox(width: 16),
-                            Text('Ascending'),
+                          children: [
+                            const Icon(FontAwesomeIcons.arrowUp, color: Colors.black),
+                            const SizedBox(width: 16),
+                            Text(Translations.of(context).asc),
                           ],
                         ),
                         onChanged: (SortDirection? value) {
@@ -66,10 +67,10 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                         value: SortDirection.desc,
                         contentPadding: EdgeInsets.zero,
                         title: Row(
-                          children: const [
-                            Icon(FontAwesomeIcons.arrowDownLong, color: Colors.black),
-                            SizedBox(width: 16),
-                            Text('Descending'),
+                          children: [
+                            const Icon(FontAwesomeIcons.arrowDownLong, color: Colors.black),
+                            const SizedBox(width: 16),
+                            Text(Translations.of(context).desc),
                           ],
                         ),
                         onChanged: (SortDirection? value) {
@@ -87,11 +88,11 @@ class SortButton<F extends BaseFilter> extends StatelessWidget {
                         filter.resetSorting();
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Reset')),
-                  TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+                      child: Text(Translations.of(context).reset)),
+                  TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),
                   TextButton(
                       onPressed: () => Navigator.of(context).pop(Tuple2(selectedSortField, selectedSortDirection)),
-                      child: const Text('Save'))
+                      child: Text(MaterialLocalizations.of(context).saveButtonLabel))
                 ],
               );
             });

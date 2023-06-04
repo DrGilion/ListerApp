@@ -6,8 +6,10 @@ import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/list_creation_dialog.dart';
 import 'package:lister_app/component/lister_page.dart';
+import 'package:lister_app/component/popup_options.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
 import 'package:lister_app/extensions.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/viewmodel/list_navigation_data.dart';
@@ -22,9 +24,6 @@ class ListsTab extends StatefulWidget {
 }
 
 class _ListsTabState extends State<ListsTab> {
-  static const String optionRename = "rename";
-  static const String optionDelete = "delete";
-
   //showcase keys
   final GlobalKey _one = GlobalKey();
   final GlobalKey _two = GlobalKey();
@@ -38,7 +37,7 @@ class _ListsTabState extends State<ListsTab> {
 
     PersistenceService.of(context).getListsSimple().then((value) {
       value.fold((l) {
-        showErrorMessage(context, 'Could not retrieve lists!', l.error, l.stackTrace);
+        showErrorMessage(context, Translations.of(context).lists_error, l.error, l.stackTrace);
       }, (r) {
         setState(() {
           lists = Map<int, SimpleListerList>.fromIterable(r, key: (it) => it.id);
@@ -62,7 +61,7 @@ class _ListsTabState extends State<ListsTab> {
                 leading: Builder(builder: (context) {
                   return Showcase(
                     key: _two,
-                    description: 'Or navigate to the drawer...',
+                    description: Translations.of(context).tutorial_createList2,
                     disposeOnTap: false,
                     onTargetClick: () async {
                       Scaffold.of(context).openDrawer();
@@ -85,7 +84,7 @@ class _ListsTabState extends State<ListsTab> {
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.help),
-                    tooltip: 'Show tutorial',
+                    tooltip: Translations.of(context).tutorial_show,
                     onPressed: () {
                       ShowCaseWidget.of(context).startShowCase([
                         if (lists.isEmpty) _one,
@@ -95,7 +94,7 @@ class _ListsTabState extends State<ListsTab> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.settings),
-                    tooltip: 'Show settings',
+                    tooltip: Translations.of(context).settings_show,
                     onPressed: () {
                       context.push('/settings');
                     },
@@ -117,11 +116,11 @@ class _ListsTabState extends State<ListsTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Center(child: Text('Choose List')),
+              child: Center(child: Text(Translations.of(context).list_choose)),
             ),
             SingleChildScrollView(
               child: Column(
@@ -132,45 +131,57 @@ class _ListsTabState extends State<ListsTab> {
                         leading: Text('ID: ${simpleList.id}'),
                         title: Text(simpleList.name),
                         trailing: PopupMenuButton<String>(
-                          itemBuilder: (context) => const [
-                            PopupMenuItem(value: optionRename, child: ListTile(title: Text('Rename'))),
-                            PopupMenuItem(value: optionDelete, child: ListTile(title: Text('Delete')))
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                                value: PopupOptions.rename,
+                                child: ListTile(title: Text(Translations.of(context).rename))),
+                            PopupMenuItem(
+                                value: PopupOptions.delete,
+                                child: ListTile(title: Text(MaterialLocalizations.of(context).deleteButtonTooltip)))
                           ],
                           onSelected: (value) async {
                             switch (value) {
-                              case optionRename:
-                                final String? newName = await showTextFieldDialog(context, 'Rename list', 'Name',
+                              case PopupOptions.rename:
+                                final String? newName = await showTextFieldDialog(
+                                    context, Translations.of(context).list_rename, Translations.of(context).name,
                                     initialValue: simpleList.name);
                                 if (newName != null && mounted) {
                                   PersistenceService.of(context).renameList(simpleList, newName).then((value) {
                                     value.fold((l) {
                                       showErrorMessage(
-                                          context, 'Could not rename list ${simpleList.name}', l.error, l.stackTrace);
+                                          context,
+                                          Translations.of(context).list_rename_error(simpleList.name),
+                                          l.error,
+                                          l.stackTrace);
                                     }, (r) {
                                       if (r > 0) {
                                         setState(() {
                                           simpleList.name = newName;
                                         });
                                       } else {
-                                        showErrorMessage(context, 'Could not rename list ${simpleList.name}',
-                                            'Failed to rename list', StackTrace.current);
+                                        showErrorMessage(
+                                            context,
+                                            Translations.of(context).list_rename_error(simpleList.name),
+                                            'Failed to rename list',
+                                            StackTrace.current);
                                       }
                                     });
                                   });
                                 }
 
                                 break;
-                              case optionDelete:
+                              case PopupOptions.delete:
                                 final bool decision = await showConfirmationDialog(
                                   context,
-                                  'Delete list',
-                                  'Are you sure that you want to delete the list "${simpleList.name}"?',
+                                  Translations.of(context).list_delete,
+                                  Translations.of(context).list_delete_confirm(simpleList.name),
                                 );
 
                                 if (decision && mounted) {
                                   PersistenceService.of(context).deleteList(simpleList.id!).then((value) {
                                     value.fold((l) {
-                                      showErrorMessage(context, 'Could not delete list!', l.error, l.stackTrace);
+                                      showErrorMessage(
+                                          context, Translations.of(context).list_delete_error, l.error, l.stackTrace);
                                     }, (r) {
                                       setState(() {
                                         ListNavigationData.of(context).currentListId = 0;
@@ -196,7 +207,7 @@ class _ListsTabState extends State<ListsTab> {
             ),
             Showcase(
               key: _three,
-              description: 'Click here to create a new list',
+              description: Translations.of(context).tutorial_createList3,
               disposeOnTap: false,
               onTargetClick: () {
                 ShowCaseWidget.of(context).dismiss();
@@ -204,7 +215,7 @@ class _ListsTabState extends State<ListsTab> {
               },
               child: ListTile(
                 leading: const Icon(Icons.add),
-                title: const Text('Add List'),
+                title: Text(Translations.of(context).list_add),
                 onTap: () => _tryAddList(context),
               ),
             )
@@ -231,7 +242,7 @@ class _ListsTabState extends State<ListsTab> {
       return Center(
         child: Showcase(
           key: _one,
-          description: 'Click here to create a new list',
+          description: Translations.of(context).tutorial_createList1,
           onBarrierClick: () {
             ShowCaseWidget.of(context).next();
           },
@@ -241,7 +252,9 @@ class _ListsTabState extends State<ListsTab> {
             _tryAddList(context, withShowcase: true);
           },
           child: TextButton.icon(
-              onPressed: () => _tryAddList(context), icon: const Icon(Icons.add), label: const Text('Add List')),
+              onPressed: () => _tryAddList(context),
+              icon: const Icon(Icons.add),
+              label: Text(Translations.of(context).list_add)),
         ),
       );
     }
@@ -254,12 +267,13 @@ class _ListsTabState extends State<ListsTab> {
 
   Future<void> _tryAddList(BuildContext context, {bool withShowcase = false}) async {
     print('add list with showcase? $withShowcase');
-    final Tuple2<String, Color>? data = await showListCreationDialog(context, 'Create List', 'Name');
+    final Tuple2<String, Color>? data =
+        await showListCreationDialog(context, Translations.of(context).list_create, Translations.of(context).name);
 
     if (data != null && mounted) {
       PersistenceService.of(context).createList(data.value1, data.value2).then((value) {
         value.fold((l) {
-          showErrorMessage(context, 'Could not create list "$data"!', l.error, l.stackTrace);
+          showErrorMessage(context, Translations.of(context).list_create_error(data), l.error, l.stackTrace);
         }, (r) {
           setState(() {
             lists[r.id!] = r;

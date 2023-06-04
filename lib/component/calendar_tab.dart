@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -43,7 +44,7 @@ class _CalendarTabState extends State<CalendarTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calendar'),
+        title: Text(Translations.of(context).calendar),
       ),
       body: Column(
         children: [
@@ -52,7 +53,7 @@ class _CalendarTabState extends State<CalendarTab> {
             lastDay: DateTime.utc(2100, 1, 1),
             focusedDay: _focusedDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
-            availableCalendarFormats: const {CalendarFormat.month: 'Month'},
+            availableCalendarFormats: {CalendarFormat.month: Translations.of(context).month},
             calendarStyle: const CalendarStyle(markersAlignment: Alignment.bottomRight),
             calendarBuilders: CalendarBuilders(
               dowBuilder: (context, day) {
@@ -118,7 +119,7 @@ class _CalendarTabState extends State<CalendarTab> {
   Future _loadItemsForRange(BuildContext context, DateTime from, DateTime to) {
     return PersistenceService.of(context).getItemsByDates(from, to).then((value) {
       value.fold((l) {
-        showErrorMessage(context, 'Could not retrieve lists!', l.error, l.stackTrace);
+        showErrorMessage(context, Translations.of(context).lists_error, l.error, l.stackTrace);
       }, (r) {
         setState(() {
           _items = r;

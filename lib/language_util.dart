@@ -1,6 +1,7 @@
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:locale_emoji/locale_emoji.dart';
 
 class LanguageUtil {
   LanguageUtil._();
@@ -38,5 +39,9 @@ class LanguageUtil {
 
   static Future<bool> saveLanguage(Locale locale) async {
     return Devicelocale.setLanguagePerApp(locale);
+  }
+
+  static String? getFlagForLocale(Locale locale) {
+    return getFlagEmoji(languageCode: locale.languageCode, countryCode: locale.countryCode);
   }
 }

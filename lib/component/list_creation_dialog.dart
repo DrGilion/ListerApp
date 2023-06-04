@@ -1,9 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:lister_app/generated/l10n.dart';
 
-Future<Tuple2<String,Color>?> showListCreationDialog(BuildContext context, String title, String label) async {
-  return showDialog<Tuple2<String,Color>>(
+Future<Tuple2<String, Color>?> showListCreationDialog(BuildContext context, String title, String label) async {
+  return showDialog<Tuple2<String, Color>>(
       context: context,
       builder: (context) {
         final GlobalKey<FormState> formKey = GlobalKey();
@@ -25,42 +26,23 @@ Future<Tuple2<String,Color>?> showListCreationDialog(BuildContext context, Strin
                         border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'The text must not be empty';
-                            } else {
-                              return null;
-                            }
-                          },
+                        if (value == null || value.isEmpty) {
+                          return Translations.of(context).validation_empty;
+                        } else {
+                          return null;
+                        }
+                      },
                       onChanged: (text) {
                         name = text;
                       },
                     ),
-              const SizedBox(height: 10),
-              ColorPicker(
-                pickerColor: color,
-                onColorChanged: (newColor) {
-                  color = newColor;
-                },
-              ),
-              // Use Material color picker:
-              //
-              // child: MaterialPicker(
-              //   pickerColor: pickerColor,
-              //   onColorChanged: changeColor,
-              //   showLabel: true, // only on portrait mode
-              // ),
-              //
-              // Use Block color picker:
-              //
-              // child: BlockPicker(
-              //   pickerColor: currentColor,
-              //   onColorChanged: changeColor,
-              // ),
-              //
-              // child: MultipleChoiceBlockPicker(
-              //   pickerColors: currentColors,
-              //   onColorsChanged: changeColors,
-              // ),
+                    const SizedBox(height: 10),
+                    ColorPicker(
+                      pickerColor: color,
+                      onColorChanged: (newColor) {
+                        color = newColor;
+                      },
+                    ),
                   ],
                 )),
           ),

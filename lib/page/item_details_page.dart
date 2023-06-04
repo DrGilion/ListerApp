@@ -5,6 +5,7 @@ import 'package:linkify/linkify.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/text_to_textfield.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/util/utils.dart';
@@ -51,22 +52,23 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
               },
               child: Scaffold(
                 appBar: AppBar(
-                  title: const Text('Entry details'),
+                  title: Text(Translations.of(context).details),
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      tooltip: 'Delete Item',
+                      tooltip: Translations.of(context).deleteItem,
                       onPressed: () async {
                         final bool decision = await showConfirmationDialog(
                           context,
-                          'Delete item',
-                          'Are you sure that you want to delete the item "${listerItem!.name}"?',
+                          Translations.of(context).deleteItem,
+                          Translations.of(context).deleteItem_confirm(listerItem!.name),
                         );
 
                         if (decision && mounted) {
                           PersistenceService.of(context).deleteItem(listerItem!.id!).then((value) {
                             value.fold((l) {
-                              showErrorMessage(context, 'Could not delete item!', l.error, l.stackTrace);
+                              showErrorMessage(context, Translations.of(context).deleteItem_confirm(listerItem!.name),
+                                  l.error, l.stackTrace);
                             }, (r) {
                               Navigator.of(context).pop();
                             });
@@ -82,19 +84,20 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                     child: Column(
                       children: [
                         TextToTextField(
-                          label: 'Name',
+                          label: Translations.of(context).name,
                           initialText: listerItem!.name,
                           onSave: (text) async {
                             if (text.isEmpty) {
-                              showErrorMessage(context, 'Name must not be empty!', ArgumentError('Name is empty!'),
-                                  StackTrace.current);
+                              showErrorMessage(context, Translations.of(context).validation_empty,
+                                  ArgumentError('Name is empty!'), StackTrace.current);
                               return false;
                             }
 
                             final newItem = await PersistenceService.of(context).updateItemName(listerItem!, text);
 
                             return newItem.fold((l) {
-                              showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
+                              showErrorMessage(
+                                  context, Translations.of(context).updateItem_error, l.error, l.stackTrace);
                               return false;
                             }, (r) {
                               setState(() {
@@ -106,7 +109,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         ),
                         const SizedBox(height: 10),
                         CheckboxListTile(
-                            title: const Text("Experienced"),
+                            title: Text(Translations.of(context).experienced),
                             controlAffinity: ListTileControlAffinity.leading,
                             contentPadding: EdgeInsets.zero,
                             value: listerItem!.experienced,
@@ -114,7 +117,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                               if (value != null) {
                                 PersistenceService.of(context).updateItemExperienced(listerItem!, value).then((value) {
                                   value.fold((l) {
-                                    showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
+                                    showErrorMessage(
+                                        context, Translations.of(context).updateItem_error, l.error, l.stackTrace);
                                   }, (r) {
                                     setState(() {
                                       listerItem = r;
@@ -125,7 +129,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                             }),
                         const SizedBox(height: 10),
                         InputDecorator(
-                          decoration: const InputDecoration(labelText: 'Rating', border: InputBorder.none),
+                          decoration:
+                              InputDecoration(labelText: Translations.of(context).rating, border: InputBorder.none),
                           child: FittedBox(
                             fit: BoxFit.contain,
                             child: RatingBar.builder(
@@ -143,7 +148,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                     .updateItemRating(listerItem!, rating.toInt())
                                     .then((value) {
                                   value.fold((l) {
-                                    showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
+                                    showErrorMessage(
+                                        context, Translations.of(context).updateItem_error, l.error, l.stackTrace);
                                   }, (r) {
                                     setState(() {
                                       listerItem = r;
@@ -170,7 +176,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                 errorTitle: e.url,
                                 errorWidget: Container(
                                   color: Colors.grey[300],
-                                  child: Text('No preview available for ${e.url}!'),
+                                  child: Text(Translations.of(context).url_preview_error(e.url)),
                                 ),
                                 cache: const Duration(days: 7),
                                 backgroundColor: Colors.grey[300],
@@ -180,7 +186,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                             ))),
                         const SizedBox(height: 10),
                         TextToTextField(
-                          label: 'Description',
+                          label: Translations.of(context).description,
                           initialText: listerItem!.description,
                           bigbox: true,
                           onSave: (text) async {
@@ -188,7 +194,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                                 await PersistenceService.of(context).updateItemDescription(listerItem!, text);
 
                             return newItem.fold((l) {
-                              showErrorMessage(context, 'Failed to update item!', l.error, l.stackTrace);
+                              showErrorMessage(
+                                  context, Translations.of(context).updateItem_error, l.error, l.stackTrace);
                               return false;
                             }, (r) {
                               setState(() {
@@ -201,11 +208,13 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         const SizedBox(height: 10),
                         Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Created on: ${Utils.formatDate(listerItem!.createdOn)}')),
+                            child: Text(
+                                '${Translations.of(context).createdOn}: ${Utils.formatDate(listerItem!.createdOn)}')),
                         const SizedBox(height: 10),
                         Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Modified on: ${Utils.formatDate(listerItem!.modifiedOn)}')),
+                            child: Text(
+                                '${Translations.of(context).modifiedOn}: ${Utils.formatDate(listerItem!.modifiedOn)}')),
                       ],
                     ),
                   ),

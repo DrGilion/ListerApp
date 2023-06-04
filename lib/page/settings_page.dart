@@ -1,4 +1,3 @@
-import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:go_router/go_router.dart';
@@ -32,31 +31,32 @@ class _SettingsPageState extends State<SettingsPage> with Commandable {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(S.of(context).settings),
+          title: Text(Translations.of(context).settings),
         ),
         body: SettingsList(
           sections: [
-            SettingsSection(title: const Text('Language & Text'), tiles: [
+            SettingsSection(title: Text(Translations.of(context).settings_language), tiles: [
               SettingsTile(
-                title: const Text('Language'),
+                title: Text(Translations.of(context).language),
                 value: ListTile(
-                  leading: currentLanguage?.let((it) => Flag.fromString(it.countryCode!, width: 30, height: 30 * 0.75)),
+                  leading: currentLanguage?.let((it) => LanguageUtil.getFlagForLocale(it)?.let((flag) => Text(flag))),
                   title: Text(
-                      currentLanguage?.let((it) => LocaleNamesLocalizationsDelegate.nativeLocaleNames[it.toString()]) ??
+                      currentLanguage?.let((it) => LocaleNamesLocalizationsDelegate.nativeLocaleNames[it.languageCode]) ??
                           '???'),
                 ),
                 onPressed: (context) {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) {
+                      print(availableLanguages);
                       return ListView.separated(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (_, idx) => ListTile(
                                 leading:
-                                    Flag.fromString(availableLanguages[idx].countryCode!, width: 30, height: 30 * 0.75),
+                                    Text(LanguageUtil.getFlagForLocale(availableLanguages[idx])!),
                                 title: Text(LocaleNamesLocalizationsDelegate
-                                    .nativeLocaleNames[availableLanguages[idx].toString()]!),
+                                    .nativeLocaleNames[availableLanguages[idx].languageCode]!),
                                 selected: currentLanguage == availableLanguages[idx],
                                 onTap: () async {
                                   final success = await LanguageUtil.saveLanguage(availableLanguages[idx]);
@@ -78,13 +78,13 @@ class _SettingsPageState extends State<SettingsPage> with Commandable {
               ),
             ]),
             SettingsSection(
-              title: const Text('Voice Assistant'),
+              title: Text(Translations.of(context).voice_assistant),
               tiles: <SettingsTile>[
                 SettingsTile.switchTile(
                   onToggle: (value) {},
                   initialValue: true,
                   leading: const Icon(Icons.settings_voice_outlined),
-                  title: const Text('Enable voice assistant'),
+                  title: Text(Translations.of(context).voice_assistant_enable),
                 ),
               ],
             ),

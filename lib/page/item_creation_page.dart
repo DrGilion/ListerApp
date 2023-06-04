@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/save_loading_button.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -45,7 +46,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
 
     PersistenceService.of(context).getListsSimple().then((value) {
       value.fold((l) {
-        showErrorMessage(context, 'Could not retrieve lists!', l.error, l.stackTrace);
+        showErrorMessage(context, Translations.of(context).lists_error, l.error, l.stackTrace);
       }, (r) {
         setState(() {
           availableLists = r;
@@ -101,7 +102,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Create Entry'),
+          title: Text(Translations.of(context).addItem),
           actions: [
             SaveLoadingButton(
               isSaving: isSaving,
@@ -117,11 +118,11 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
               children: [
                 DropdownButtonFormField<int>(
                   value: listId,
-                  decoration: inputDecoration.copyWith(labelText: 'List *'),
+                  decoration: inputDecoration.copyWith(labelText: '${Translations.of(context).list} *'),
                   items: availableLists.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name))).toList(),
                   validator: (item) {
                     if (item == null) {
-                      return 'You must choose a list!';
+                      return Translations.of(context).validation_chooseList;
                     }
 
                     return null;
@@ -134,11 +135,11 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
-                  decoration: inputDecoration.copyWith(labelText: 'Name *'),
+                  decoration: inputDecoration.copyWith(labelText: '${Translations.of(context).name} *'),
                   initialValue: name,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Name must not be empty!';
+                      return Translations.of(context).name;
                     }
 
                     return null;
@@ -149,7 +150,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                 ),
                 const SizedBox(height: 10),
                 CheckboxListTile(
-                    title: const Text("Experienced"),
+                    title: Text(Translations.of(context).experienced),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     value: experienced,
@@ -162,7 +163,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                     }),
                 const SizedBox(height: 10),
                 InputDecorator(
-                  decoration: inputDecoration.copyWith(labelText: 'Rating', border: InputBorder.none),
+                  decoration: inputDecoration.copyWith(labelText: Translations.of(context).rating, border: InputBorder.none),
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: RatingBar.builder(
@@ -186,7 +187,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                 const SizedBox(height: 10),
                 Expanded(
                   child: TextFormField(
-                    decoration: inputDecoration.copyWith(labelText: 'Description'),
+                    decoration: inputDecoration.copyWith(labelText: Translations.of(context).description),
                     maxLines: null,
                     controller: _textEditingController,
                     onChanged: (value) {
@@ -197,14 +198,14 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
                 Text(
                   // If listening is active show the recognized words
                   _speechToText.isListening
-                      ? 'listening...'
+                      ? Translations.of(context).voice_listening
                       // If listening isn't active but could be tell the user
                       // how to start it, otherwise indicate that speech
                       // recognition is not yet ready or not supported on
                       // the target device
                       : _speechEnabled
-                          ? 'Tap the microphone to start listening...'
-                          : 'Speech not available',
+                          ? Translations.of(context).voice_listen_start
+                          : Translations.of(context).voice_listen_disabled,
                 ),
               ],
             ),
@@ -214,7 +215,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
           onPressed:
               // If not yet listening for speech start, otherwise stop
               _speechToText.isNotListening ? _startListening : _stopListening,
-          tooltip: 'Listen',
+          tooltip: Translations.of(context).voice_listen,
           child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
         ),
       ),
@@ -229,7 +230,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
 
       await PersistenceService.of(context).createItem(listId!, name!, description, rating, experienced).then((value) {
         value.fold((l) {
-          showErrorMessage(context, 'Could not create entry!', l.error, l.stackTrace);
+          showErrorMessage(context, Translations.of(context).addItem_error, l.error, l.stackTrace);
         }, (r) {
           Navigator.of(context).pop(r);
         });

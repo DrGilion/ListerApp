@@ -75,13 +75,13 @@ class _ListerAppState extends State<ListerApp> {
       builder: (context, _) => MaterialApp.router(
         title: 'Lister App',
         localizationsDelegates: const [
-          S.delegate,
+          Translations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
           LocaleNamesLocalizationsDelegate(),
         ],
-        supportedLocales: S.delegate.supportedLocales,
+        supportedLocales: Translations.delegate.supportedLocales,
         theme: ThemeData(
           dividerTheme: const DividerThemeData(space: 0),
         ),

@@ -3,6 +3,8 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
+import 'package:lister_app/component/popup_options.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
 import 'package:lister_app/service/persistence_service.dart';
@@ -17,8 +19,6 @@ class ListerItemTile extends StatefulWidget {
 }
 
 class _ListerItemTileState extends State<ListerItemTile> {
-  static const String optionDelete = 'delete';
-
   late ListerItem listItem;
 
   @override
@@ -46,24 +46,24 @@ class _ListerItemTileState extends State<ListerItemTile> {
           context: context,
           position: position,
           items: [
-            const PopupMenuItem(
-              value: optionDelete,
-              child: ListTile(leading: Icon(Icons.delete), title: Text('Delete Item')),
+            PopupMenuItem(
+              value: PopupOptions.delete,
+              child: ListTile(leading: const Icon(Icons.delete), title: Text(Translations.of(context).deleteItem)),
             )
           ],
         ).then((value) async {
           switch (value) {
-            case optionDelete:
+            case PopupOptions.delete:
               final bool decision = await showConfirmationDialog(
                 context,
-                'Delete item',
-                'Are you sure that you want to delete the item "${listItem.name}"?',
+                Translations.of(context).deleteItem,
+                Translations.of(context).deleteItem_confirm(listItem.name),
               );
 
               if (decision && mounted) {
                 PersistenceService.of(context).deleteItem(listItem.id!).then((value) {
                   value.fold((l) {
-                    showErrorMessage(context, 'Could not delete item!', l.error, l.stackTrace);
+                    showErrorMessage(context, Translations.of(context).deleteItem_error, l.error, l.stackTrace);
                   }, (r) {
                     ItemRemovedNotification(listItem.id!).dispatch(context);
                   });

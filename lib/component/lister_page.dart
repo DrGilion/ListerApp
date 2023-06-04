@@ -7,6 +7,7 @@ import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/component/search_bar.dart';
 import 'package:lister_app/component/sort_button.dart';
 import 'package:lister_app/filter/item_filter.dart';
+import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
@@ -76,11 +77,11 @@ class _ListerPageState extends State<ListerPage> {
         actions: [
           SortButton(
             filter: _filter,
-            optionsMap: const {
-              'name': Tuple2(FontAwesomeIcons.font, 'Name'),
-              'rating': Tuple2(FontAwesomeIcons.star, 'Rating'),
-              'experienced': Tuple2(FontAwesomeIcons.check, 'Done/ Not Done'),
-              'modified_on': Tuple2(FontAwesomeIcons.calendar, 'Modification time'),
+            optionsMap: {
+              'name': Tuple2(FontAwesomeIcons.font, Translations.of(context).name),
+              'rating': Tuple2(FontAwesomeIcons.star, Translations.of(context).rating),
+              'experienced': Tuple2(FontAwesomeIcons.check, Translations.of(context).experienced),
+              'modified_on': Tuple2(FontAwesomeIcons.calendar, Translations.of(context).modifiedOn),
             },
           )
         ],
@@ -103,7 +104,7 @@ class _ListerPageState extends State<ListerPage> {
       return Center(
         child: TextButton.icon(
           icon: const Icon(Icons.add),
-          label: const Text('Add Item'),
+          label: Text(Translations.of(context).addItem),
           onPressed: () => _tryAddItem(context),
         ),
       );
@@ -133,7 +134,7 @@ class _ListerPageState extends State<ListerPage> {
             searchString: searchString ?? '', sortField: _filter.sorting.value1, sortDirection: _filter.sorting.value2)
         .then((value) {
       value.fold((l) {
-        showErrorMessage(context, 'Could not retrieve items for list "${widget.list.name}"', l.error, l.stackTrace);
+        showErrorMessage(context, Translations.of(context).getItems_error(widget.list.name), l.error, l.stackTrace);
       }, (r) {
         setState(() {
           completeList = r;
