@@ -9,10 +9,11 @@ import 'package:lister_app/component/list_creation_dialog.dart';
 import 'package:lister_app/component/lister_page.dart';
 import 'package:lister_app/component/popup_options.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
-import 'package:lister_app/extensions.dart';
 import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/service/persistence_service.dart';
+import 'package:lister_app/util/extensions.dart';
+import 'package:lister_app/util/logging.dart';
 import 'package:lister_app/viewmodel/list_navigation_data.dart';
 import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
@@ -296,7 +297,7 @@ class _ListsTabState extends State<ListsTab> {
   }
 
   Future<void> _tryAddList(BuildContext context, {bool withShowcase = false}) async {
-    print('add list with showcase? $withShowcase');
+    logger.d('add list with showcase? $withShowcase');
     final Tuple2<String, Color>? data =
         await showListCreationDialog(context, Translations.of(context).list_create, Translations.of(context).name);
 
@@ -315,7 +316,7 @@ class _ListsTabState extends State<ListsTab> {
 
   AppUpdateInfo? _updateInfo;
 
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   bool _flexibleUpdateAvailable = false;
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lister_app/main.dart';
+import 'package:lister_app/util/logging.dart';
 
 void showErrorMessage(BuildContext context, String message, dynamic error, StackTrace stackTrace) {
   logger.e(message, error, stackTrace);

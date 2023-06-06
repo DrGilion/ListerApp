@@ -19,7 +19,7 @@ class ItemDetailsPage extends StatefulWidget {
   const ItemDetailsPage({this.listerItem, this.itemId, super.key}) : assert(listerItem != null || itemId != null);
 
   @override
-  _ItemDetailsPageState createState() => _ItemDetailsPageState();
+  State<ItemDetailsPage> createState() => _ItemDetailsPageState();
 }
 
 class _ItemDetailsPageState extends State<ItemDetailsPage> {

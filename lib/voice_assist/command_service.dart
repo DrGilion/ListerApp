@@ -19,9 +19,7 @@ class CommandService {
   ];
 
   static List<Future Function(BuildContext)> parseTextToCommands(String text) {
-    print(text);
     final commandStrings = splitCommands(text.toLowerCase());
-    print(commandStrings);
     final commands = commandStrings.map((e) => createCommand(e)).toList();
     return commands;
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:lister_app/main.dart';
 import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/service/persistence_service.dart';
+import 'package:lister_app/util/logging.dart';
 import 'package:lister_app/viewmodel/list_navigation_data.dart';
 import 'package:lister_app/voice_assist/command/command.dart';
 

@@ -1,6 +1,7 @@
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lister_app/util/logging.dart';
 import 'package:locale_emoji/locale_emoji.dart';
 
 class LanguageUtil {
@@ -10,7 +11,7 @@ class LanguageUtil {
     try {
       return Devicelocale.defaultAsLocale;
     } on PlatformException {
-      print("Error obtaining default locale");
+      logger.e("Error obtaining default locale");
       return null;
     }
   }
@@ -19,7 +20,7 @@ class LanguageUtil {
     try {
       return Devicelocale.currentAsLocale;
     } on PlatformException {
-      print("Error obtaining current locale");
+      logger.e("Error obtaining current locale");
       return null;
     }
   }
@@ -28,7 +29,7 @@ class LanguageUtil {
     try {
       return Devicelocale.preferredLanguagesAsLocales;
     } on PlatformException {
-      print("Error obtaining preferred languages");
+      logger.e("Error obtaining preferred languages");
       return [];
     }
   }

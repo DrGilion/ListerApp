@@ -16,7 +16,7 @@ class ItemCreationPage extends StatefulWidget {
   const ItemCreationPage(this.initialListId, {super.key});
 
   @override
-  _ItemCreationPageState createState() => _ItemCreationPageState();
+  State<ItemCreationPage> createState() => _ItemCreationPageState();
 }
 
 class _ItemCreationPageState extends State<ItemCreationPage> {

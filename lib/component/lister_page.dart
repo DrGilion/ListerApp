@@ -21,7 +21,7 @@ class ListerPage extends StatefulWidget {
   const ListerPage(this.list, {super.key});
 
   @override
-  _ListerPageState createState() => _ListerPageState();
+  State<ListerPage> createState() => _ListerPageState();
 }
 
 class _ListerPageState extends State<ListerPage> {

@@ -19,7 +19,7 @@ class TextToTextField extends StatefulWidget {
       required this.onSave});
 
   @override
-  _TextToTextFieldState createState() => _TextToTextFieldState();
+  State<TextToTextField> createState() => _TextToTextFieldState();
 }
 
 class _TextToTextFieldState extends State<TextToTextField> {

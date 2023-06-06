@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lister_app/extensions.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/language_util.dart';
+import 'package:lister_app/util/extensions.dart';
+import 'package:lister_app/util/language_util.dart';
 import 'package:lister_app/voice_assist/commandable_mixin.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -48,7 +48,6 @@ class _SettingsPageState extends State<SettingsPage> with Commandable {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) {
-                      print(availableLanguages);
                       return ListView.separated(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),

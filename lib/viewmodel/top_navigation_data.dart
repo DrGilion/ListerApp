@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lister_app/main.dart';
+import 'package:lister_app/util/logging.dart';
 import 'package:lister_app/viewmodel/display_mode.dart';
 import 'package:provider/provider.dart';
 

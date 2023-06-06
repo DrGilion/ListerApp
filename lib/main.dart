@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lister_app/lister_app.dart';
-import 'package:logger/logger.dart';
+import 'package:lister_app/util/logging.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-
-final logger = Logger();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

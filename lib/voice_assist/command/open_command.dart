@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lister_app/main.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
+import 'package:lister_app/util/logging.dart';
 import 'package:lister_app/voice_assist/command/command.dart';
 
 /// navigates to the detail view of something e.g. a [ListerItem]
