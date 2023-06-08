@@ -35,7 +35,7 @@ class PersistenceService {
       final List<Map<String, dynamic>> itemResults = await database.query(ListerItem.tableName,
           where: "list_id = ?1 and name LIKE ?2",
           whereArgs: [listId, "%$searchString%"],
-          orderBy: "$sortField ${describeEnum(sortDirection)}");
+          orderBy: "$sortField COLLATE NOCASE ${describeEnum(sortDirection)}");
       final items = itemResults.map((e) => ListerItem.fromJson(e)).toList();
 
       return Right(ListerList(theList.id!, theList.name, theList.color, items));

@@ -69,8 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lists": MessageLookupByLibrary.simpleMessage("Listen"),
         "lists_error": MessageLookupByLibrary.simpleMessage(
             "Listen konnten nicht geladen werden!"),
-        "modifiedOn":
-            MessageLookupByLibrary.simpleMessage("Zuletzt bearbeitet am"),
+        "modifiedOn": MessageLookupByLibrary.simpleMessage("Bearbeitet am"),
         "month": MessageLookupByLibrary.simpleMessage("Monat"),
         "name": MessageLookupByLibrary.simpleMessage("Name"),
         "no": MessageLookupByLibrary.simpleMessage("Nein"),

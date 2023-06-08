@@ -8,6 +8,7 @@ import 'package:lister_app/component/text_to_textfield.dart';
 import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/service/persistence_service.dart';
+import 'package:lister_app/util/extensions.dart';
 import 'package:lister_app/util/utils.dart';
 
 class ItemDetailsPage extends StatefulWidget {
@@ -161,9 +162,11 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        PagedUrlPreview(
-                            urls:
-                                (linkify(listerItem!.description).whereType<UrlElement>().map((e) => e.url).toList())),
+                        linkify(listerItem!.description)
+                            .whereType<UrlElement>()
+                            .map((e) => e.url)
+                            .toList()
+                            .let((it) => it.isNotEmpty ? PagedUrlPreview(urls: it) : const SizedBox()),
                         const SizedBox(height: 10),
                         TextToTextField(
                           label: Translations.of(context).description,

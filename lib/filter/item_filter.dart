@@ -10,5 +10,5 @@ class ItemFilter extends BaseFilter {
   String defaultSorting = 'name';
 
   @override
-  SortDirection defaultDirection = SortDirection.desc;
+  SortDirection defaultDirection = SortDirection.asc;
 }

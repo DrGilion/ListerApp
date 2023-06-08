@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:lister_app/component/calendar_tab.dart';
 import 'package:lister_app/component/lists_tab.dart';
 import 'package:lister_app/generated/l10n.dart';
+import 'package:lister_app/routing.dart';
+import 'package:lister_app/util/flutter_util.dart';
+import 'package:lister_app/util/logging.dart';
 import 'package:lister_app/viewmodel/display_mode.dart';
 import 'package:lister_app/viewmodel/top_navigation_data.dart';
 import 'package:lister_app/voice_assist/command_service.dart';
@@ -21,7 +24,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with Commandable {
+class _HomePageState extends State<HomePage> with Commandable, RouteAware {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
 
@@ -29,7 +32,42 @@ class _HomePageState extends State<HomePage> with Commandable {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      routeObserver.subscribe(this, ModalRoute.of(context)!);
+    });
+
     _initSpeech();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+
+    super.dispose();
+  }
+
+  @override
+  void didPush() {
+    logger.d('didPush');
+    FlutterUtil.globalUnfocus();
+  }
+
+  @override
+  void didPushNext() {
+    logger.d('didPushNext');
+    FlutterUtil.globalUnfocus();
+  }
+
+  @override
+  void didPop() {
+    logger.d('didPop');
+    FlutterUtil.globalUnfocus();
+  }
+
+  @override
+  void didPopNext() {
+    logger.d('didPopNext');
+    FlutterUtil.globalUnfocus();
   }
 
   /// This has to happen only once per app

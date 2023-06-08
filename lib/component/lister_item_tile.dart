@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:go_router/go_router.dart';
+import 'package:highlight_text/highlight_text.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/popup_options.dart';
@@ -11,8 +12,9 @@ import 'package:lister_app/service/persistence_service.dart';
 
 class ListerItemTile extends StatefulWidget {
   final ListerItem listItem;
+  final String highlightedText;
 
-  const ListerItemTile({super.key, required this.listItem});
+  const ListerItemTile({super.key, required this.listItem, this.highlightedText = ''});
 
   @override
   State<ListerItemTile> createState() => _ListerItemTileState();
@@ -26,6 +28,15 @@ class _ListerItemTileState extends State<ListerItemTile> {
     super.initState();
 
     listItem = widget.listItem;
+  }
+
+  @override
+  void didUpdateWidget(covariant ListerItemTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.listItem != widget.listItem) {
+      listItem = widget.listItem;
+    }
   }
 
   @override
@@ -74,13 +85,22 @@ class _ListerItemTileState extends State<ListerItemTile> {
         });
       },
       child: ListTile(
-        leading: listItem.experienced ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.check, color: Colors.green),
-          ],
-        ) : const SizedBox(),
-        title: Text(listItem.name),
+        leading: listItem.experienced
+            ? const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check, color: Colors.green),
+                ],
+              )
+            : const SizedBox(),
+        title: TextHighlight(
+          text: listItem.name,
+          textStyle: const TextStyle(color: Colors.black),
+          words: {
+            if (widget.highlightedText.isNotEmpty)
+              widget.highlightedText: HighlightedWord(textStyle: const TextStyle(backgroundColor: Colors.yellowAccent))
+          },
+        ),
         subtitle: Linkify(text: listItem.description, maxLines: 2, overflow: TextOverflow.ellipsis),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -96,7 +116,7 @@ class _ListerItemTileState extends State<ListerItemTile> {
         ),
         onTap: () async {
           final returnedItem = await context.push('/item/details', extra: listItem);
-          if (returnedItem == null && mounted ) {
+          if (returnedItem == null && mounted) {
             ItemRemovedNotification(listItem.id!).dispatch(context);
           } else {
             setState(() {

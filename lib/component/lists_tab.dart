@@ -98,6 +98,7 @@ class _ListsTabState extends State<ListsTab> {
                   PopupMenuButton(
                     itemBuilder: (BuildContext context) => [
                       PopupMenuItem(
+                        value: PopupOptions.settings,
                         child: ListTile(
                           leading: const Icon(Icons.settings),
                           title: Text(Translations.of(context).settings_show),

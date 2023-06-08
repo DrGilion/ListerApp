@@ -9,9 +9,12 @@ import 'package:lister_app/util/extensions.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
+final routeObserver = RouteObserver<ModalRoute<void>>();
+
 // GoRouter configuration
 final router = GoRouter(
   navigatorKey: navigatorKey,
+  observers: [routeObserver],
   routes: [
     GoRoute(
       path: '/',
