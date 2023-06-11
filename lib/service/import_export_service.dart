@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
 
 class ImportExportService {
   static ImportExportService of(BuildContext context) => Provider.of<ImportExportService>(context, listen: false);
 
   ListerFilerFormat _determineFormat(String extension) {
-    switch (extension) {
-      case '.backup':
-        return ListerFilerFormat.backup;
-      case '.json':
-        return ListerFilerFormat.json;
-      default:
-        return ListerFilerFormat.txt;
-    }
+    return switch (extension) {
+      '.backup' => ListerFilerFormat.backup,
+      '.json' => ListerFilerFormat.json,
+      _ => ListerFilerFormat.txt
+    };
   }
 
   //TODO

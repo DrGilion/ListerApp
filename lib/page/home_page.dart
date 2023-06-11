@@ -135,12 +135,10 @@ class _HomePageState extends State<HomePage> with Commandable, RouteAware {
   Widget _buildBody(BuildContext context) {
     return Consumer<TopNavigationData>(
       builder: (context, data, _) {
-        switch (data.displayMode) {
-          case DisplayMode.lists:
-            return const ListsTab();
-          case DisplayMode.calendar:
-            return const CalendarTab();
-        }
+        return switch (data.displayMode) {
+          DisplayMode.lists => const ListsTab(),
+          DisplayMode.calendar => const CalendarTab()
+        };
       },
     );
   }

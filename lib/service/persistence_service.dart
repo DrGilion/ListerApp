@@ -5,6 +5,7 @@ import 'package:lister_app/filter/sort_direction.dart';
 import 'package:lister_app/model/failure.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
+import 'package:lister_app/model/lister_tag.dart';
 import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -217,6 +218,15 @@ class PersistenceService {
       } else {
         return Left(Failure('Could not delete item', StackTrace.current));
       }
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
+  }
+
+  Future<Either<Failure, List<ListerTag>>> getTags() async {
+    try {
+      final List<Map<String, dynamic>> results = await database.query(ListerTag.tableName);
+      return Right(results.map((e) => ListerTag.fromJson(e)).toList());
     } catch (e, stack) {
       return Left(Failure(e, stack));
     }
