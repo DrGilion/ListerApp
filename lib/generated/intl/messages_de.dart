@@ -33,7 +33,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(name) => "Konnte Liste ${name} nicht umbenennen";
 
-  static String m5(url) => "Keine Vorschau vorhanden für ${url}!";
+  static String m5(name) => "Tag ${name} konnte nicht erstellt werden";
+
+  static String m6(name) =>
+      "Bist du sicher, dass das Tag ${name} gelöscht werden soll?";
+
+  static String m7(url) => "Keine Vorschau vorhanden für ${url}!";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -82,6 +87,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "settings_show":
             MessageLookupByLibrary.simpleMessage("Einstellungen zeigen"),
         "sortBy": MessageLookupByLibrary.simpleMessage("Sortieren nach"),
+        "tag_add": MessageLookupByLibrary.simpleMessage("Tag hinzufügen"),
+        "tags": MessageLookupByLibrary.simpleMessage("Tags"),
+        "tags_create": MessageLookupByLibrary.simpleMessage("Tag erstellen"),
+        "tags_create_error": m5,
+        "tags_delete": MessageLookupByLibrary.simpleMessage("Tag löschen"),
+        "tags_delete_confirm": m6,
+        "tags_delete_error": MessageLookupByLibrary.simpleMessage(
+            "Tag konnte nicht gelöscht werden!"),
+        "tags_error": MessageLookupByLibrary.simpleMessage(
+            "Tags konnte nicht geladen werden"),
         "tutorial_createList1": MessageLookupByLibrary.simpleMessage(
             "Klicke hier, um eine neue Liste zu erstellen"),
         "tutorial_createList2": MessageLookupByLibrary.simpleMessage(
@@ -93,7 +108,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "update": MessageLookupByLibrary.simpleMessage("Update"),
         "updateItem_error": MessageLookupByLibrary.simpleMessage(
             "Eintrag-Aktualisierung fehlgeschlagen!"),
-        "url_preview_error": m5,
+        "url_preview_error": m7,
         "validation_chooseList": MessageLookupByLibrary.simpleMessage(
             "Du musst eine Liste auswählen!"),
         "validation_empty": MessageLookupByLibrary.simpleMessage(

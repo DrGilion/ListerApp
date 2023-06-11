@@ -106,8 +106,7 @@ class PersistenceService {
 
   Future<Either<Failure, int>> renameList(SimpleListerList listerList, String newName) async {
     try {
-      final int rowsAffected = await database.update(
-          SimpleListerList.tableName, (listerList..name = newName).toJson(),
+      final int rowsAffected = await database.update(SimpleListerList.tableName, (listerList..name = newName).toJson(),
           where: 'id = ?', whereArgs: [listerList.id]);
 
       return Right(rowsAffected);
@@ -225,8 +224,32 @@ class PersistenceService {
 
   Future<Either<Failure, List<ListerTag>>> getTags() async {
     try {
-      final List<Map<String, dynamic>> results = await database.query(ListerTag.tableName);
+      final List<Map<String, dynamic>> results =
+          await database.query(ListerTag.tableName, orderBy: "name COLLATE NOCASE asc");
       return Right(results.map((e) => ListerTag.fromJson(e)).toList());
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
+  }
+
+  Future<Either<Failure, ListerTag>> createTag(String name, Color color) async {
+    try {
+      final newItem = ListerTag(null, name, color.value);
+      newItem.id = await database.insert(ListerTag.tableName, newItem.toJson());
+      return Right(newItem);
+    } catch (e, stack) {
+      return Left(Failure(e, stack));
+    }
+  }
+
+  Future<Either<Failure, int>> deleteTag(int tagId) async {
+    try {
+      final int itemsDeleted = await database.delete(ListerTag.tableName, where: 'id = ?', whereArgs: [tagId]);
+      if (itemsDeleted == 1) {
+        return Right(itemsDeleted);
+      } else {
+        return Left(Failure('Could not delete item', StackTrace.current));
+      }
     } catch (e, stack) {
       return Left(Failure(e, stack));
     }

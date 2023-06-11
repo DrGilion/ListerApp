@@ -32,7 +32,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(name) => "Could not rename list ${name}";
 
-  static String m5(url) => "No preview available for ${url}!";
+  static String m5(name) => "Could not create tag ${name}";
+
+  static String m6(name) =>
+      "Are you sure that you want to delete the tag ${name} ?";
+
+  static String m7(url) => "No preview available for ${url}!";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -79,6 +84,16 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Language & Text"),
         "settings_show": MessageLookupByLibrary.simpleMessage("Show settings"),
         "sortBy": MessageLookupByLibrary.simpleMessage("Sort by"),
+        "tag_add": MessageLookupByLibrary.simpleMessage("Add tag"),
+        "tags": MessageLookupByLibrary.simpleMessage("Tags"),
+        "tags_create": MessageLookupByLibrary.simpleMessage("Create tag"),
+        "tags_create_error": m5,
+        "tags_delete": MessageLookupByLibrary.simpleMessage("Delete tag"),
+        "tags_delete_confirm": m6,
+        "tags_delete_error":
+            MessageLookupByLibrary.simpleMessage("Could not delete tag!"),
+        "tags_error":
+            MessageLookupByLibrary.simpleMessage("Could not retrieve tags"),
         "tutorial_createList1": MessageLookupByLibrary.simpleMessage(
             "Click here to create a new list"),
         "tutorial_createList2": MessageLookupByLibrary.simpleMessage(
@@ -89,7 +104,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "update": MessageLookupByLibrary.simpleMessage("Update"),
         "updateItem_error":
             MessageLookupByLibrary.simpleMessage("Failed to update item!"),
-        "url_preview_error": m5,
+        "url_preview_error": m7,
         "validation_chooseList":
             MessageLookupByLibrary.simpleMessage("You must choose a list!"),
         "validation_empty":

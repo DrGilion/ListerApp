@@ -45,5 +45,8 @@ const Map<int, String> migrationScripts = {
                                     created_on INTEGER,
                                     modified_on INTEGER,
                                     FOREIGN KEY (list_id) REFERENCES core_list(id)
-        );'''
+        );''',
+  3: '''
+        CREATE TABLE core_tag (id INTEGER PRIMARY KEY, name TEXT, color INTEGER);
+        ''',
 };

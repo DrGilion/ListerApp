@@ -61,6 +61,7 @@ class _ListsTabState extends State<ListsTab> {
               appBar: AppBar(
                 title: Text(_getAppbarTitle(context)),
                 backgroundColor: _getBackgroundColor(context),
+                elevation: 0,
                 leading: Builder(builder: (context) {
                   return Showcase(
                     key: _two,

@@ -2,6 +2,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lister_app/component/calendar_tab.dart';
 import 'package:lister_app/component/lists_tab.dart';
+import 'package:lister_app/component/tags_tab.dart';
 import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/routing.dart';
 import 'package:lister_app/util/flutter_util.dart';
@@ -111,12 +112,13 @@ class _HomePageState extends State<HomePage> with Commandable, RouteAware {
         child: Scaffold(
             body: _buildBody(context),
             bottomNavigationBar: ConvexAppBar(
-              style: TabStyle.fixedCircle,
+              style: TabStyle.react,
               items: [
                 TabItem(icon: Icons.home, title: Translations.of(context).lists),
                 TabItem(
                     icon: _speechEnabled ? (_speechToText.isNotListening ? Icons.mic_off : Icons.mic) : Icons.close),
-                TabItem(icon: Icons.calendar_month, title: Translations.of(context).calendar)
+                TabItem(icon: Icons.calendar_month, title: Translations.of(context).calendar),
+                TabItem(icon: Icons.tag, title: Translations.of(context).tags),
               ],
               onTap: (int index) {
                 setState(() {
@@ -126,6 +128,8 @@ class _HomePageState extends State<HomePage> with Commandable, RouteAware {
                     _speechToText.isNotListening ? _startListening() : _stopListening();
                   } else if (index == 2) {
                     TopNavigationData.of(context).displayMode = DisplayMode.calendar;
+                  } else if (index == 3) {
+                    TopNavigationData.of(context).displayMode = DisplayMode.tags;
                   }
                 });
               },
@@ -137,7 +141,8 @@ class _HomePageState extends State<HomePage> with Commandable, RouteAware {
       builder: (context, data, _) {
         return switch (data.displayMode) {
           DisplayMode.lists => const ListsTab(),
-          DisplayMode.calendar => const CalendarTab()
+          DisplayMode.calendar => const CalendarTab(),
+          DisplayMode.tags => const TagsTab(),
         };
       },
     );

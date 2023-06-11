@@ -331,6 +331,86 @@ class Translations {
     );
   }
 
+  /// `Add tag`
+  String get tag_add {
+    return Intl.message(
+      'Add tag',
+      name: 'tag_add',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tags`
+  String get tags {
+    return Intl.message(
+      'Tags',
+      name: 'tags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not retrieve tags`
+  String get tags_error {
+    return Intl.message(
+      'Could not retrieve tags',
+      name: 'tags_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create tag`
+  String get tags_create {
+    return Intl.message(
+      'Create tag',
+      name: 'tags_create',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not create tag {name}`
+  String tags_create_error(Object name) {
+    return Intl.message(
+      'Could not create tag $name',
+      name: 'tags_create_error',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Delete tag`
+  String get tags_delete {
+    return Intl.message(
+      'Delete tag',
+      name: 'tags_delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure that you want to delete the tag {name} ?`
+  String tags_delete_confirm(Object name) {
+    return Intl.message(
+      'Are you sure that you want to delete the tag $name ?',
+      name: 'tags_delete_confirm',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Could not delete tag!`
+  String get tags_delete_error {
+    return Intl.message(
+      'Could not delete tag!',
+      name: 'tags_delete_error',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Calendar`
   String get calendar {
     return Intl.message(

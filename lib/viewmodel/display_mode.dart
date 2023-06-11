@@ -1,4 +1,5 @@
 enum DisplayMode {
   lists,
-  calendar;
+  calendar,
+  tags;
 }

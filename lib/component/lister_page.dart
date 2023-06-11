@@ -128,7 +128,7 @@ class _ListerPageState extends State<ListerPage> {
           await _fetchList(context);
         },
         child: ListView.separated(
-          physics: const BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           padding: const EdgeInsets.only(bottom: kToolbarHeight),
           itemBuilder: (context, index) => ListerItemTile(
             key: ValueKey(completeList!.items[index].id),
