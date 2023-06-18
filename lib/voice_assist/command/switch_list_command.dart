@@ -10,10 +10,10 @@ class SwitchListCommand extends Command<void> {
   Future Function(BuildContext) generateCommand(String rawCommand) {
     return (context) async {
       final listName = rawCommand.split(' ').last;
-      await PersistenceService.of(context).findSimpleList(name: listName).then((value) => value.fold(
+      await PersistenceService.of(context).findListByName(listName).then((value) => value.fold(
             (l) => logger.e('List with name $listName not found'),
             (r) {
-              ListNavigationData.of(context).currentListId = r.id!;
+              ListNavigationData.of(context).currentListId = r.id;
             },
           ));
       return Future.value();

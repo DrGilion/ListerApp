@@ -123,7 +123,10 @@ class _SortDialogState extends State<SortDialog> {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),
         TextButton(
-            onPressed: () => widget.filter.sorting = Tuple2(selectedSortField, selectedSortDirection),
+            onPressed: () {
+              widget.filter.sorting = Tuple2(selectedSortField, selectedSortDirection);
+              Navigator.of(context).pop();
+            },
             child: Text(MaterialLocalizations.of(context).saveButtonLabel))
       ],
     );

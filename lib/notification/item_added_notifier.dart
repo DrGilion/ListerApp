@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lister_app/model/lister_item.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:provider/provider.dart';
 
 class ItemAddedNotifier extends ChangeNotifier {

@@ -1,31 +1,20 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:lister_app/util/utils.dart';
+import 'package:drift/drift.dart';
+import 'package:lister_app/model/base.dart';
+import 'package:lister_app/model/lister_list.dart';
 
-part 'lister_item.g.dart';
+@DataClassName('ListerItem')
+class ListerItemTable extends Table with AutoIncrementingPrimaryKey {
+  IntColumn get listId => integer().references(ListerListTable, #id)();
 
-@JsonSerializable()
-class ListerItem {
-  static const String tableName = "core_list_item";
+  TextColumn get name => text()();
 
-  @JsonKey(includeIfNull: false)
-  int? id;
-  @JsonKey(name: 'list_id')
-  int listId;
-  String name;
-  @JsonKey(defaultValue: '')
-  String description;
-  int rating;
-  @JsonKey(fromJson: Utils.intToBool, toJson: Utils.boolToInt)
-  bool experienced;
-  @JsonKey(name: 'created_on', fromJson: Utils.dateFromMillis, toJson: Utils.dateToMillis)
-  DateTime createdOn;
-  @JsonKey(name: 'modified_on', fromJson: Utils.dateFromMillis, toJson: Utils.dateToMillis)
-  DateTime modifiedOn;
+  TextColumn get description => text().withDefault(const Constant(''))();
 
-  ListerItem(this.id, this.listId, this.name, this.description, this.rating, this.experienced, this.createdOn,
-      this.modifiedOn);
+  IntColumn get rating => integer().withDefault(const Constant(0))();
 
-  factory ListerItem.fromJson(Map<String, dynamic> json) => _$ListerItemFromJson(json);
+  BoolColumn get experienced => boolean().withDefault(const Constant(false))();
 
-  Map<String, dynamic> toJson() => _$ListerItemToJson(this);
+  DateTimeColumn get createdOn => dateTime()();
+
+  DateTimeColumn get modifiedOn => dateTime()();
 }

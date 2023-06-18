@@ -1,19 +1,10 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:drift/drift.dart';
+import 'package:lister_app/model/base.dart';
+import 'package:lister_app/service/lister_database.dart';
 
-part 'lister_tag.g.dart';
+@DataClassName('ListerTag')
+class ListerTagTable extends Table with AutoIncrementingPrimaryKey {
+  TextColumn get name => text()();
 
-@JsonSerializable()
-class ListerTag {
-  static const String tableName = "core_tag";
-
-  @JsonKey(includeIfNull: false)
-  int? id;
-  String name;
-  int color;
-
-  ListerTag(this.id, this.name, this.color);
-
-  factory ListerTag.fromJson(Map<String, dynamic> json) => _$ListerTagFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ListerTagToJson(this);
+  IntColumn get color => integer().map(const ColorConverter())();
 }

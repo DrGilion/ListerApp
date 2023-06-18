@@ -3,7 +3,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/save_loading_button.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/simple_lister_list.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -32,7 +32,7 @@ class _ItemCreationPageState extends State<ItemCreationPage> {
 
   final InputDecoration inputDecoration = const InputDecoration();
 
-  List<SimpleListerList> availableLists = [];
+  List<ListerList> availableLists = [];
 
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;

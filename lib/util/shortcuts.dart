@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/routing.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/util/logging.dart';
 import 'package:quick_actions/quick_actions.dart';
 

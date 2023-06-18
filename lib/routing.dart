@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/page/home_page.dart';
 import 'package:lister_app/page/item_creation_page.dart';
 import 'package:lister_app/page/item_details_page.dart';
 import 'package:lister_app/page/settings_page.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/util/extensions.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();

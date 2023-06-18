@@ -5,7 +5,7 @@ import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/popup_options.dart';
 import 'package:lister_app/component/tag_creation_dialog.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/lister_tag.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class TagsTab extends StatefulWidget {
@@ -100,7 +100,7 @@ class _TagsTabState extends State<TagsTab> {
               );
 
               if (decision && mounted) {
-                _deleteTag(context, tag.id!);
+                _deleteTag(context, tag.id);
               }
               break;
           }
@@ -108,7 +108,7 @@ class _TagsTabState extends State<TagsTab> {
       },
       child: ListTile(
         title: Text(tag.name),
-        tileColor: Color(tag.color),
+        tileColor: tag.color,
       ),
     );
   }
@@ -129,7 +129,7 @@ class _TagsTabState extends State<TagsTab> {
     final Tuple2<String, Color>? data =
         await showTagCreationDialog(context, Translations.of(context).tags_create, Translations.of(context).name);
 
-    if (data != null) {
+    if (data != null && mounted) {
       PersistenceService.of(context).createTag(data.value1, data.value2).then((value) {
         value.fold((l) {
           showErrorMessage(context, Translations.of(context).tags_create_error(data.value1), l.error, l.stackTrace);

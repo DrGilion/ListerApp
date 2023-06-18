@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/lister_item.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 

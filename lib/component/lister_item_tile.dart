@@ -6,8 +6,8 @@ import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/popup_options.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class ListerItemTile extends StatefulWidget {
@@ -72,11 +72,11 @@ class _ListerItemTileState extends State<ListerItemTile> {
               );
 
               if (decision && mounted) {
-                PersistenceService.of(context).deleteItem(listItem.id!).then((value) {
+                PersistenceService.of(context).deleteItem(listItem.id).then((value) {
                   value.fold((l) {
                     showErrorMessage(context, Translations.of(context).deleteItem_error, l.error, l.stackTrace);
                   }, (r) {
-                    ItemRemovedNotification(listItem.id!).dispatch(context);
+                    ItemRemovedNotification(listItem.id).dispatch(context);
                   });
                 });
               }
@@ -117,7 +117,7 @@ class _ListerItemTileState extends State<ListerItemTile> {
         onTap: () async {
           final returnedItem = await context.push('/item/details', extra: listItem);
           if (returnedItem == null && mounted) {
-            ItemRemovedNotification(listItem.id!).dispatch(context);
+            ItemRemovedNotification(listItem.id).dispatch(context);
           } else {
             setState(() {
               listItem = returnedItem as ListerItem;

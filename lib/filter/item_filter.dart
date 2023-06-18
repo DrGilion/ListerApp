@@ -7,7 +7,13 @@ class ItemFilter extends BaseFilter {
   static ItemFilter of(BuildContext context) => Provider.of<ItemFilter>(context, listen: false);
 
   @override
-  String defaultSorting = 'name';
+  String defaultSorting = sortingName;
+
+  static const String sortingName = 'name';
+  static const String sortingRating = 'rating';
+  static const String sortingExperienced = 'experienced';
+  static const String sortingCreatedOn = 'created_on';
+  static const String sortingModifiedOn = 'modified_on';
 
   @override
   SortDirection defaultDirection = SortDirection.asc;

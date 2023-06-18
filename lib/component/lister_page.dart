@@ -7,16 +7,14 @@ import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/component/sort_button.dart';
 import 'package:lister_app/filter/item_filter.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/lister_item.dart';
-import 'package:lister_app/model/lister_list.dart';
-import 'package:lister_app/model/simple_lister_list.dart';
 import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/util/delayed_callback.dart';
 
 class ListerPage extends StatefulWidget {
-  final SimpleListerList list;
+  final ListerList list;
 
   const ListerPage(this.list, {super.key});
 
@@ -32,7 +30,7 @@ class _ListerPageState extends State<ListerPage> {
   late ItemAddedNotifier _itemAddedNotifier;
   late Function() _itemAddedListener;
 
-  ListerList? completeList;
+  List<ListerItem>? _items;
 
   @override
   void didChangeDependencies() {
@@ -81,18 +79,18 @@ class _ListerPageState extends State<ListerPage> {
             SortButton(
               filter: _filter,
               optionsMap: {
-                'name': Tuple2(FontAwesomeIcons.font, Translations.of(context).name),
-                'rating': Tuple2(FontAwesomeIcons.star, Translations.of(context).rating),
-                'experienced': Tuple2(FontAwesomeIcons.check, Translations.of(context).experienced),
-                'created_on': Tuple2(FontAwesomeIcons.calendar, Translations.of(context).createdOn),
-                'modified_on': Tuple2(FontAwesomeIcons.calendar, Translations.of(context).modifiedOn),
+                ItemFilter.sortingName: Tuple2(FontAwesomeIcons.font, Translations.of(context).name),
+                ItemFilter.sortingRating: Tuple2(FontAwesomeIcons.star, Translations.of(context).rating),
+                ItemFilter.sortingExperienced: Tuple2(FontAwesomeIcons.check, Translations.of(context).experienced),
+                ItemFilter.sortingCreatedOn: Tuple2(FontAwesomeIcons.calendar, Translations.of(context).createdOn),
+                ItemFilter.sortingModifiedOn: Tuple2(FontAwesomeIcons.calendar, Translations.of(context).modifiedOn),
               },
             )
           ],
           hintText: MaterialLocalizations.of(context).searchFieldLabel,
         ),
       ),
-      floatingActionButton: completeList == null
+      floatingActionButton: _items == null
           ? null
           : FloatingActionButton(
               child: const Icon(Icons.add),
@@ -102,11 +100,11 @@ class _ListerPageState extends State<ListerPage> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (completeList == null) {
+    if (_items == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (completeList!.items.isEmpty) {
+    if (_items!.isEmpty) {
       return Center(
         child: TextButton.icon(
           icon: const Icon(Icons.add),
@@ -119,7 +117,7 @@ class _ListerPageState extends State<ListerPage> {
     return NotificationListener<ItemRemovedNotification>(
       onNotification: (notification) {
         setState(() {
-          completeList!.items.removeWhere((element) => element.id == notification.itemId);
+          _items!.removeWhere((element) => element.id == notification.itemId);
         });
         return false;
       },
@@ -131,14 +129,14 @@ class _ListerPageState extends State<ListerPage> {
           physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           padding: const EdgeInsets.only(bottom: kToolbarHeight),
           itemBuilder: (context, index) => ListerItemTile(
-            key: ValueKey(completeList!.items[index].id),
-            listItem: completeList!.items[index],
+            key: ValueKey(_items![index].id),
+            listItem: _items![index],
             highlightedText: searchTextController.text,
           ),
           separatorBuilder: (_, __) => const Divider(
             color: Colors.black,
           ),
-          itemCount: completeList!.items.length,
+          itemCount: _items!.length,
         ),
       ),
     );
@@ -146,7 +144,7 @@ class _ListerPageState extends State<ListerPage> {
 
   Future<void> _fetchList(BuildContext context) {
     return PersistenceService.of(context)
-        .getCompleteList(widget.list.id!,
+        .getListerItems(listId: widget.list.id,
             searchString: searchTextController.text,
             sortField: _filter.sorting.value1,
             sortDirection: _filter.sorting.value2)
@@ -155,7 +153,7 @@ class _ListerPageState extends State<ListerPage> {
         showErrorMessage(context, Translations.of(context).getItems_error(widget.list.name), l.error, l.stackTrace);
       }, (r) {
         setState(() {
-          completeList = r;
+          _items = r;
         });
       });
     });
@@ -167,7 +165,7 @@ class _ListerPageState extends State<ListerPage> {
 
     if (newItem != null) {
       setState(() {
-        completeList!.items.add(newItem);
+        _items!.add(newItem);
       });
     }
   }

@@ -7,16 +7,16 @@ import 'package:lister_app/generated/l10n.dart';
 import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/routing.dart';
 import 'package:lister_app/service/import_export_service.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/util/shortcuts.dart';
 import 'package:lister_app/viewmodel/list_navigation_data.dart';
 import 'package:lister_app/viewmodel/top_navigation_data.dart';
 import 'package:lister_app/voice_assist/commands.dart';
 import 'package:provider/provider.dart';
-import 'package:sqflite/sqflite.dart';
 
 class ListerApp extends StatefulWidget {
-  final Database database;
+  final ListerDatabase database;
 
   const ListerApp(this.database, {super.key});
 

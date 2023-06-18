@@ -6,7 +6,7 @@ import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/paged_url_preview.dart';
 import 'package:lister_app/component/text_to_textfield.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/lister_item.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/util/extensions.dart';
 import 'package:lister_app/util/utils.dart';
@@ -33,7 +33,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
     if (widget.listerItem != null) {
       listerItem = widget.listerItem!;
     } else {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         PersistenceService.of(context).getListerItem(widget.itemId!).then((value) {
           value.fold((l) => null, (r) => setState(() => listerItem = r));
         });
@@ -66,7 +66,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         );
 
                         if (decision && mounted) {
-                          PersistenceService.of(context).deleteItem(listerItem!.id!).then((value) {
+                          PersistenceService.of(context).deleteItem(listerItem!.id).then((value) {
                             value.fold((l) {
                               showErrorMessage(context, Translations.of(context).deleteItem_confirm(listerItem!.name),
                                   l.error, l.stackTrace);
@@ -94,7 +94,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                               return false;
                             }
 
-                            final newItem = await PersistenceService.of(context).updateItemName(listerItem!, text);
+                            final newItem = await PersistenceService.of(context).updateItem(listerItem!, name: text);
 
                             return newItem.fold((l) {
                               showErrorMessage(
@@ -116,7 +116,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                             value: listerItem!.experienced,
                             onChanged: (value) {
                               if (value != null) {
-                                PersistenceService.of(context).updateItemExperienced(listerItem!, value).then((value) {
+                                PersistenceService.of(context).updateItem(listerItem!, experienced: value).then((value) {
                                   value.fold((l) {
                                     showErrorMessage(
                                         context, Translations.of(context).updateItem_error, l.error, l.stackTrace);
@@ -146,7 +146,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                               ),
                               onRatingUpdate: (rating) {
                                 PersistenceService.of(context)
-                                    .updateItemRating(listerItem!, rating.toInt())
+                                    .updateItem(listerItem!, rating: rating.toInt())
                                     .then((value) {
                                   value.fold((l) {
                                     showErrorMessage(
@@ -174,7 +174,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           bigbox: true,
                           onSave: (text) async {
                             final newItem =
-                                await PersistenceService.of(context).updateItemDescription(listerItem!, text);
+                                await PersistenceService.of(context).updateItem(listerItem!, description: text);
 
                             return newItem.fold((l) {
                               showErrorMessage(

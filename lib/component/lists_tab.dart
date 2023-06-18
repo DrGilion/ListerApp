@@ -10,10 +10,11 @@ import 'package:lister_app/component/lister_page.dart';
 import 'package:lister_app/component/popup_options.dart';
 import 'package:lister_app/component/textfield_dialog.dart';
 import 'package:lister_app/generated/l10n.dart';
-import 'package:lister_app/model/simple_lister_list.dart';
+import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/util/extensions.dart';
 import 'package:lister_app/util/logging.dart';
+import 'package:lister_app/util/utils.dart';
 import 'package:lister_app/viewmodel/list_navigation_data.dart';
 import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
@@ -31,7 +32,7 @@ class _ListsTabState extends State<ListsTab> {
   final GlobalKey _two = GlobalKey();
   final GlobalKey _three = GlobalKey();
 
-  Map<int, SimpleListerList> lists = {};
+  Map<int, ListerList> lists = {};
 
   @override
   void initState() {
@@ -42,8 +43,10 @@ class _ListsTabState extends State<ListsTab> {
         showErrorMessage(context, Translations.of(context).lists_error, l.error, l.stackTrace);
       }, (r) {
         setState(() {
-          lists = Map<int, SimpleListerList>.fromIterable(r, key: (it) => it.id);
-          ListNavigationData.of(context).currentListId = lists.values.firstOrNull?.id;
+          lists = Map<int, ListerList>.fromIterable(r, key: (it) => it.id);
+          if(ListNavigationData.of(context).currentListId == null){
+            ListNavigationData.of(context).currentListId = lists.values.firstOrNull?.id;
+          }
         });
       });
     });
@@ -59,7 +62,10 @@ class _ListsTabState extends State<ListsTab> {
             child: Scaffold(
               key: _scaffoldKey,
               appBar: AppBar(
-                title: Text(_getAppbarTitle(context)),
+                title: Text(
+                  _getAppbarTitle(context),
+                  style: TextStyle(color: _getForegroundColor(context)),
+                ),
                 backgroundColor: _getBackgroundColor(context),
                 elevation: 0,
                 leading: Builder(builder: (context) {
@@ -87,7 +93,10 @@ class _ListsTabState extends State<ListsTab> {
                 }),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.help),
+                    icon: Icon(
+                      Icons.help,
+                      color: _getForegroundColor(context),
+                    ),
                     tooltip: Translations.of(context).tutorial_show,
                     onPressed: () {
                       ShowCaseWidget.of(context).startShowCase([
@@ -97,6 +106,7 @@ class _ListsTabState extends State<ListsTab> {
                     },
                   ),
                   PopupMenuButton(
+                    color: _getForegroundColor(context),
                     itemBuilder: (BuildContext context) => [
                       PopupMenuItem(
                         value: PopupOptions.settings,
@@ -160,10 +170,14 @@ class _ListsTabState extends State<ListsTab> {
                 children: lists.values
                     .map<Widget>(
                       (simpleList) => ListTile(
-                        tileColor: Color(simpleList.color),
-                        leading: Text('ID: ${simpleList.id}'),
-                        title: Text(simpleList.name),
+                        tileColor: simpleList.color,
+                        //leading: Text('ID: ${simpleList.id}'),
+                        title: Text(
+                          simpleList.name,
+                          style: TextStyle(color: Utils.getContrastingColor(simpleList.color)),
+                        ),
                         trailing: PopupMenuButton<String>(
+                          color: Utils.getContrastingColor(simpleList.color),
                           itemBuilder: (context) => [
                             PopupMenuItem(
                                 value: PopupOptions.rename,
@@ -179,7 +193,7 @@ class _ListsTabState extends State<ListsTab> {
                                     context, Translations.of(context).list_rename, Translations.of(context).name,
                                     initialValue: simpleList.name);
                                 if (newName != null && mounted) {
-                                  PersistenceService.of(context).renameList(simpleList, newName).then((value) {
+                                  PersistenceService.of(context).updateList(simpleList, newName: newName).then((value) {
                                     value.fold((l) {
                                       showErrorMessage(
                                           context,
@@ -187,17 +201,9 @@ class _ListsTabState extends State<ListsTab> {
                                           l.error,
                                           l.stackTrace);
                                     }, (r) {
-                                      if (r > 0) {
-                                        setState(() {
-                                          simpleList.name = newName;
-                                        });
-                                      } else {
-                                        showErrorMessage(
-                                            context,
-                                            Translations.of(context).list_rename_error(simpleList.name),
-                                            'Failed to rename list',
-                                            StackTrace.current);
-                                      }
+                                      setState(() {
+                                        simpleList = r;
+                                      });
                                     });
                                   });
                                 }
@@ -211,14 +217,14 @@ class _ListsTabState extends State<ListsTab> {
                                 );
 
                                 if (decision && mounted) {
-                                  PersistenceService.of(context).deleteList(simpleList.id!).then((value) {
+                                  PersistenceService.of(context).deleteList(simpleList.id).then((value) {
                                     value.fold((l) {
                                       showErrorMessage(
                                           context, Translations.of(context).list_delete_error, l.error, l.stackTrace);
                                     }, (r) {
                                       setState(() {
-                                        ListNavigationData.of(context).currentListId = 0;
                                         lists.removeWhere((key, value) => key == simpleList.id);
+                                        ListNavigationData.of(context).currentListId = lists.keys.firstOrNull;
                                       });
                                     });
                                   });
@@ -229,7 +235,7 @@ class _ListsTabState extends State<ListsTab> {
                         ),
                         onTap: () {
                           setState(() {
-                            ListNavigationData.of(context).currentListId = simpleList.id!;
+                            ListNavigationData.of(context).currentListId = simpleList.id;
                           });
                           Navigator.of(context).pop();
                         },
@@ -264,10 +270,16 @@ class _ListsTabState extends State<ListsTab> {
         : lists[ListNavigationData.of(context).currentListId]!.name;
   }
 
+  Color _getForegroundColor(BuildContext context) {
+    return lists.isEmpty || ListNavigationData.of(context).currentListId == null
+        ? Colors.black
+        : Utils.getContrastingColor(lists[ListNavigationData.of(context).currentListId]!.color);
+  }
+
   Color? _getBackgroundColor(BuildContext context) {
     return lists.isEmpty || ListNavigationData.of(context).currentListId == null
         ? null
-        : lists[ListNavigationData.of(context).currentListId]!.color.let((it) => Color(it));
+        : lists[ListNavigationData.of(context).currentListId]!.color.let((it) => it);
   }
 
   Widget _buildBody(BuildContext context) {
@@ -309,7 +321,10 @@ class _ListsTabState extends State<ListsTab> {
           showErrorMessage(context, Translations.of(context).list_create_error(data), l.error, l.stackTrace);
         }, (r) {
           setState(() {
-            lists[r.id!] = r;
+            lists[r.id] = r;
+            if (lists.length == 1) {
+              ListNavigationData.of(context).currentListId = r.id;
+            }
           });
         });
       });
