@@ -7,6 +7,7 @@ import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/component/sort_button.dart';
 import 'package:lister_app/filter/item_filter.dart';
 import 'package:lister_app/generated/l10n.dart';
+import 'package:lister_app/model/item_with_tags.dart';
 import 'package:lister_app/notification/item_added_notifier.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
 import 'package:lister_app/service/lister_database.dart';
@@ -30,7 +31,7 @@ class _ListerPageState extends State<ListerPage> {
   late ItemAddedNotifier _itemAddedNotifier;
   late Function() _itemAddedListener;
 
-  List<ListerItem>? _items;
+  List<ItemWithTags>? _items;
 
   @override
   void didChangeDependencies() {
@@ -117,7 +118,7 @@ class _ListerPageState extends State<ListerPage> {
     return NotificationListener<ItemRemovedNotification>(
       onNotification: (notification) {
         setState(() {
-          _items!.removeWhere((element) => element.id == notification.itemId);
+          _items!.removeWhere((element) => element.item.id == notification.itemId);
         });
         return false;
       },
@@ -129,7 +130,7 @@ class _ListerPageState extends State<ListerPage> {
           physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           padding: const EdgeInsets.only(bottom: kToolbarHeight),
           itemBuilder: (context, index) => ListerItemTile(
-            key: ValueKey(_items![index].id),
+            key: ValueKey(_items![index].item.id),
             listItem: _items![index],
             highlightedText: searchTextController.text,
           ),
@@ -144,7 +145,7 @@ class _ListerPageState extends State<ListerPage> {
 
   Future<void> _fetchList(BuildContext context) {
     return PersistenceService.of(context)
-        .getListerItems(listId: widget.list.id,
+        .getItemsWithTags(listId: widget.list.id,
             searchString: searchTextController.text,
             sortField: _filter.sorting.value1,
             sortDirection: _filter.sorting.value2)
@@ -160,8 +161,8 @@ class _ListerPageState extends State<ListerPage> {
   }
 
   Future<void> _tryAddItem(BuildContext context) async {
-    final ListerItem? newItem = await context
-        .push<ListerItem>(Uri(path: '/item/create', queryParameters: {'listId': widget.list.id.toString()}).toString());
+    final ItemWithTags? newItem = await context
+        .push<ItemWithTags>(Uri(path: '/item/create', queryParameters: {'listId': widget.list.id.toString()}).toString());
 
     if (newItem != null) {
       setState(() {

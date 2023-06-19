@@ -4,8 +4,10 @@ import 'package:linkify/linkify.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/paged_url_preview.dart';
+import 'package:lister_app/component/tag_item.dart';
 import 'package:lister_app/component/text_to_textfield.dart';
 import 'package:lister_app/generated/l10n.dart';
+import 'package:lister_app/model/item_with_tags.dart';
 import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:lister_app/util/extensions.dart';
@@ -14,7 +16,7 @@ import 'package:lister_app/util/utils.dart';
 class ItemDetailsPage extends StatefulWidget {
   static const String routeName = "ItemDetailsPage";
 
-  final ListerItem? listerItem;
+  final ItemWithTags? listerItem;
   final int? itemId;
 
   const ItemDetailsPage({this.listerItem, this.itemId, super.key}) : assert(listerItem != null || itemId != null);
@@ -24,7 +26,9 @@ class ItemDetailsPage extends StatefulWidget {
 }
 
 class _ItemDetailsPageState extends State<ItemDetailsPage> {
-  ListerItem? listerItem;
+  ItemWithTags? listerItem;
+
+  List<ListerTag> availableTags = [];
 
   @override
   void initState() {
@@ -39,6 +43,16 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
         });
       });
     }
+
+    PersistenceService.of(context).getTags().then((value) {
+      value.fold((l) {
+        showErrorMessage(context, Translations.of(context).tags_error, l.error, l.stackTrace);
+      }, (r) {
+        setState(() {
+          availableTags = r;
+        });
+      });
+    });
   }
 
   @override
@@ -62,14 +76,17 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         final bool decision = await showConfirmationDialog(
                           context,
                           Translations.of(context).deleteItem,
-                          Translations.of(context).deleteItem_confirm(listerItem!.name),
+                          Translations.of(context).deleteItem_confirm(listerItem!.item.name),
                         );
 
                         if (decision && mounted) {
-                          PersistenceService.of(context).deleteItem(listerItem!.id).then((value) {
+                          PersistenceService.of(context).deleteItem(listerItem!.item.id).then((value) {
                             value.fold((l) {
-                              showErrorMessage(context, Translations.of(context).deleteItem_confirm(listerItem!.name),
-                                  l.error, l.stackTrace);
+                              showErrorMessage(
+                                  context,
+                                  Translations.of(context).deleteItem_confirm(listerItem!.item.name),
+                                  l.error,
+                                  l.stackTrace);
                             }, (r) {
                               Navigator.of(context).pop();
                             });
@@ -86,7 +103,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       children: [
                         TextToTextField(
                           label: Translations.of(context).name,
-                          initialText: listerItem!.name,
+                          initialText: listerItem!.item.name,
                           onSave: (text) async {
                             if (text.isEmpty) {
                               showErrorMessage(context, Translations.of(context).validation_empty,
@@ -94,7 +111,8 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                               return false;
                             }
 
-                            final newItem = await PersistenceService.of(context).updateItem(listerItem!, name: text);
+                            final newItem =
+                                await PersistenceService.of(context).updateItem(listerItem!.item.id, name: text);
 
                             return newItem.fold((l) {
                               showErrorMessage(
@@ -113,10 +131,12 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                             title: Text(Translations.of(context).experienced),
                             controlAffinity: ListTileControlAffinity.leading,
                             contentPadding: EdgeInsets.zero,
-                            value: listerItem!.experienced,
+                            value: listerItem!.item.experienced,
                             onChanged: (value) {
                               if (value != null) {
-                                PersistenceService.of(context).updateItem(listerItem!, experienced: value).then((value) {
+                                PersistenceService.of(context)
+                                    .updateItem(listerItem!.item.id, experienced: value)
+                                    .then((value) {
                                   value.fold((l) {
                                     showErrorMessage(
                                         context, Translations.of(context).updateItem_error, l.error, l.stackTrace);
@@ -135,7 +155,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           child: FittedBox(
                             fit: BoxFit.contain,
                             child: RatingBar.builder(
-                              initialRating: listerItem!.rating.toDouble(),
+                              initialRating: listerItem!.item.rating.toDouble(),
                               minRating: 0,
                               direction: Axis.horizontal,
                               allowHalfRating: false,
@@ -146,7 +166,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                               ),
                               onRatingUpdate: (rating) {
                                 PersistenceService.of(context)
-                                    .updateItem(listerItem!, rating: rating.toInt())
+                                    .updateItem(listerItem!.item.id, rating: rating.toInt())
                                     .then((value) {
                                   value.fold((l) {
                                     showErrorMessage(
@@ -162,7 +182,47 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        linkify(listerItem!.description)
+                        InputDecorator(
+                          decoration:
+                              InputDecoration(labelText: Translations.of(context).tags, border: InputBorder.none),
+                          child: Wrap(
+                            spacing: 8,
+                            children: [
+                              ...listerItem!.tags.map((e) => TagItem(tag: e)).toList(),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      showDragHandle: true,
+                                      builder: (context) {
+                                        return Column(
+                                          children: availableTags
+                                              .map((e) => ListTile(
+                                                    leading:
+                                                        listerItem!.tags.contains(e) ? const Icon(Icons.check) : null,
+                                                    title: Text(e.name),
+                                                    tileColor: e.color,
+                                                    onTap: () {
+                                                      setState(() {
+                                                        if (listerItem!.tags.contains(e)) {
+                                                          listerItem!.tags.remove(e);
+                                                        } else {
+                                                          listerItem!.tags.add(e);
+                                                        }
+                                                      });
+                                                    },
+                                                  ))
+                                              .toList(),
+                                        );
+                                      });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        linkify(listerItem!.item.description)
                             .whereType<UrlElement>()
                             .map((e) => e.url)
                             .toList()
@@ -170,11 +230,11 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         const SizedBox(height: 10),
                         TextToTextField(
                           label: Translations.of(context).description,
-                          initialText: listerItem!.description,
+                          initialText: listerItem!.item.description,
                           bigbox: true,
                           onSave: (text) async {
                             final newItem =
-                                await PersistenceService.of(context).updateItem(listerItem!, description: text);
+                                await PersistenceService.of(context).updateItem(listerItem!.item.id, description: text);
 
                             return newItem.fold((l) {
                               showErrorMessage(
@@ -192,12 +252,12 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                         Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                                '${Translations.of(context).createdOn}: ${Utils.formatDate(listerItem!.createdOn)}')),
+                                '${Translations.of(context).createdOn}: ${Utils.formatDate(listerItem!.item.createdOn)}')),
                         const SizedBox(height: 10),
                         Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                                '${Translations.of(context).modifiedOn}: ${Utils.formatDate(listerItem!.modifiedOn)}')),
+                                '${Translations.of(context).modifiedOn}: ${Utils.formatDate(listerItem!.item.modifiedOn)}')),
                       ],
                     ),
                   ),

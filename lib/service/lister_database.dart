@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:lister_app/model/item_tag_mapping.dart';
 import 'package:lister_app/model/lister_item.dart';
 import 'package:lister_app/model/lister_list.dart';
 import 'package:lister_app/model/lister_tag.dart';
@@ -13,7 +14,7 @@ export 'dart:ui' show Color;
 
 part 'lister_database.g.dart';
 
-@DriftDatabase(tables: [ListerListTable, ListerItemTable, ListerTagTable])
+@DriftDatabase(tables: [ListerListTable, ListerItemTable, ListerTagTable, ItemTagMappingTable])
 class ListerDatabase extends _$ListerDatabase {
   // we tell the database where to store the data with this constructor
   ListerDatabase() : super(_openConnection());
@@ -21,7 +22,24 @@ class ListerDatabase extends _$ListerDatabase {
   // you should bump this number whenever you change or add a table definition.
   // Migrations are covered later in the documentation.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      beforeOpen: (details) async {
+        await customStatement('PRAGMA foreign_keys = ON');
+      },
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.createTable(itemTagMappingTable);
+        }
+      },
+    );
+  }
 }
 
 LazyDatabase _openConnection() {

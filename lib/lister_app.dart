@@ -56,12 +56,16 @@ class _ListerAppState extends State<ListerApp> {
           ],
           supportedLocales: Translations.delegate.supportedLocales,
           theme: ThemeData(
+            chipTheme: ChipThemeData(
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            ),
             searchBarTheme: SearchBarThemeData(
               shape: MaterialStateProperty.resolveWith((states) =>
                   const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)))),
             ),
             dividerTheme: const DividerThemeData(space: 0),
-            useMaterial3: false,
+            useMaterial3: true,
           ),
           routerConfig: router,
         ),

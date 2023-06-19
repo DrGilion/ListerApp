@@ -44,7 +44,7 @@ class _ListsTabState extends State<ListsTab> {
       }, (r) {
         setState(() {
           lists = Map<int, ListerList>.fromIterable(r, key: (it) => it.id);
-          if(ListNavigationData.of(context).currentListId == null){
+          if (ListNavigationData.of(context).currentListId == null) {
             ListNavigationData.of(context).currentListId = lists.values.firstOrNull?.id;
           }
         });
@@ -61,95 +61,99 @@ class _ListsTabState extends State<ListsTab> {
           builder: (BuildContext context, ListNavigationData value, Widget? child) => SafeArea(
             child: Scaffold(
               key: _scaffoldKey,
-              appBar: AppBar(
-                title: Text(
-                  _getAppbarTitle(context),
-                  style: TextStyle(color: _getForegroundColor(context)),
-                ),
-                backgroundColor: _getBackgroundColor(context),
-                elevation: 0,
-                leading: Builder(builder: (context) {
-                  return Showcase(
-                    key: _two,
-                    description: Translations.of(context).tutorial_createList2,
-                    disposeOnTap: false,
-                    onTargetClick: () async {
-                      Scaffold.of(context).openDrawer();
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      if (mounted) ShowCaseWidget.of(context).startShowCase([_three]);
-                    },
-                    child: Builder(
-                      builder: (BuildContext context) {
-                        return IconButton(
-                          icon: const Icon(Icons.menu),
-                          onPressed: () {
-                            Scaffold.of(context).openDrawer();
-                          },
-                          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-                        );
-                      },
-                    ),
-                  );
-                }),
-                actions: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.help,
-                      color: _getForegroundColor(context),
-                    ),
-                    tooltip: Translations.of(context).tutorial_show,
-                    onPressed: () {
-                      ShowCaseWidget.of(context).startShowCase([
-                        if (lists.isEmpty) _one,
-                        _two,
-                      ]);
-                    },
-                  ),
-                  PopupMenuButton(
-                    color: _getForegroundColor(context),
-                    itemBuilder: (BuildContext context) => [
-                      PopupMenuItem(
-                        value: PopupOptions.settings,
-                        child: ListTile(
-                          leading: const Icon(Icons.settings),
-                          title: Text(Translations.of(context).settings_show),
-                        ),
-                      ),
-                      /*PopupMenuItem(
-                        child: ListTile(
-                          leading: const Icon(Icons.update),
-                          title: Text(Translations.of(context).update),
-                        ),
-                      ),*/
-                    ],
-                    onSelected: (value) async {
-                      switch (value) {
-                        case PopupOptions.settings:
-                          context.push('/settings');
-                          break;
-
-                        case PopupOptions.update:
-                          if (_updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
-                            InAppUpdate.startFlexibleUpdate().then((_) {
-                              setState(() {
-                                _flexibleUpdateAvailable = true;
-                              });
-                            }).catchError((e) {
-                              showSnack(e.toString());
-                            });
-                          }
-                          break;
-                      }
-                    },
-                  )
-                ],
-              ),
+              appBar: _buildAppBar(context),
               drawer: _buildDrawer(context),
               body: _buildBody(context),
             ),
           ),
         );
       }),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        _getAppbarTitle(context),
+        style: TextStyle(color: _getForegroundColor(context)),
+      ),
+      backgroundColor: _getBackgroundColor(context),
+      elevation: 0,
+      leading: Builder(builder: (context) {
+        return Showcase(
+          key: _two,
+          description: Translations.of(context).tutorial_createList2,
+          disposeOnTap: false,
+          onTargetClick: () async {
+            Scaffold.of(context).openDrawer();
+            await Future.delayed(const Duration(milliseconds: 500));
+            if (mounted) ShowCaseWidget.of(context).startShowCase([_three]);
+          },
+          child: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: Icon(Icons.menu, color: _getForegroundColor(context)),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
+          ),
+        );
+      }),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.help,
+            color: _getForegroundColor(context),
+          ),
+          tooltip: Translations.of(context).tutorial_show,
+          onPressed: () {
+            ShowCaseWidget.of(context).startShowCase([
+              if (lists.isEmpty) _one,
+              _two,
+            ]);
+          },
+        ),
+        PopupMenuButton(
+          color: _getForegroundColor(context),
+          itemBuilder: (BuildContext context) => [
+            PopupMenuItem(
+              value: PopupOptions.settings,
+              child: ListTile(
+                leading: const Icon(Icons.settings),
+                title: Text(Translations.of(context).settings_show),
+              ),
+            ),
+            /*PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(Icons.update),
+                        title: Text(Translations.of(context).update),
+                      ),
+                    ),*/
+          ],
+          onSelected: (value) async {
+            switch (value) {
+              case PopupOptions.settings:
+                context.push('/settings');
+                break;
+
+              case PopupOptions.update:
+                if (_updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
+                  InAppUpdate.startFlexibleUpdate().then((_) {
+                    setState(() {
+                      _flexibleUpdateAvailable = true;
+                    });
+                  }).catchError((e) {
+                    showSnack(e.toString());
+                  });
+                }
+                break;
+            }
+          },
+        )
+      ],
     );
   }
 
@@ -193,7 +197,9 @@ class _ListsTabState extends State<ListsTab> {
                                     context, Translations.of(context).list_rename, Translations.of(context).name,
                                     initialValue: simpleList.name);
                                 if (newName != null && mounted) {
-                                  PersistenceService.of(context).updateList(simpleList, newName: newName).then((value) {
+                                  PersistenceService.of(context)
+                                      .updateList(simpleList.id, newName: newName)
+                                      .then((value) {
                                     value.fold((l) {
                                       showErrorMessage(
                                           context,

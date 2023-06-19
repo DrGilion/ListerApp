@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lister_app/filter/item_filter.dart';
 import 'package:lister_app/filter/sort_direction.dart';
 import 'package:lister_app/model/failure.dart';
+import 'package:lister_app/model/item_with_tags.dart';
 import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/util/logging.dart';
 import 'package:provider/provider.dart';
@@ -48,9 +49,9 @@ class PersistenceService {
     }
   }
 
-  Future<Either<Failure, ListerList>> updateList(ListerList listerList, {String? newName, Color? newColor}) async {
+  Future<Either<Failure, ListerList>> updateList(int listId, {String? newName, Color? newColor}) async {
     try {
-      final query = (database.update(database.listerListTable)..where((tbl) => tbl.id.equals(listerList.id)))
+      final query = (database.update(database.listerListTable)..where((tbl) => tbl.id.equals(listId)))
           .writeReturning(ListerListTableCompanion(name: Value.ofNullable(newName), color: Value.ofNullable(newColor)));
 
       return Right((await query).first);
@@ -111,14 +112,82 @@ class PersistenceService {
     }
   }
 
-  Future<Either<Failure, ListerItem>> getListerItem(int itemId) async {
+  Future<Either<Failure, ItemWithTags>> getListerItem(int itemId) async {
     try {
-      final query = (database.select(database.listerItemTable)..where((tbl) => tbl.id.equals(itemId))).getSingle();
+      final item = await (database.select(database.listerItemTable)..where((tbl) => tbl.id.equals(itemId))).getSingle();
 
-      return Right(await query);
+      final mappingsQuery = (database.select(database.itemTagMappingTable).join([
+        innerJoin(
+          database.listerTagTable,
+          database.listerTagTable.id.equalsExp(database.itemTagMappingTable.tagId),
+        )
+      ])
+            ..where(database.itemTagMappingTable.itemId.equals(item.id)))
+          .get();
+
+      final idToTags = <int, List<ListerTag>>{};
+
+      return mappingsQuery.then((mappings) {
+        for (var row in mappings) {
+          final item = row.readTable(database.listerTagTable);
+          final id = row.readTable(database.itemTagMappingTable).itemId;
+
+          idToTags.putIfAbsent(id, () => []).add(item);
+        }
+
+        return Right(ItemWithTags(item, idToTags[item.id] ?? []));
+      });
     } catch (e, stack) {
       return Left(Failure(e, stack));
     }
+  }
+
+  Future<Either<Failure, List<ItemWithTags>>> getItemsWithTags({
+    required int listId,
+    String searchString = '',
+    required String sortField,
+    required SortDirection sortDirection,
+  }) async {
+    final allItems = await getListerItems(
+      listId: listId,
+      searchString: searchString,
+      sortField: sortField,
+      sortDirection: sortDirection,
+    );
+    final result = allItems.map((items) {
+      final Map<int, ListerItem> idToItem = {for (var item in items) item.id: item};
+      final ids = idToItem.keys;
+
+      final mappingsQuery = (database.select(database.itemTagMappingTable).join([
+        innerJoin(
+          database.listerTagTable,
+          database.listerTagTable.id.equalsExp(database.itemTagMappingTable.tagId),
+        )
+      ])
+            ..where(database.itemTagMappingTable.itemId.isIn(ids)))
+          .get();
+
+      final idToTags = <int, List<ListerTag>>{};
+
+      return mappingsQuery.then((mappings) {
+        for (var row in mappings) {
+          final item = row.readTable(database.listerTagTable);
+          final id = row.readTable(database.itemTagMappingTable).itemId;
+
+          idToTags.putIfAbsent(id, () => []).add(item);
+        }
+
+        return <ItemWithTags>[
+          for (var id in ids) ItemWithTags(idToItem[id]!, idToTags[id] ?? []),
+        ];
+      });
+    });
+
+    return switch (result) {
+      Left(value: var l) => Left(l),
+      Right(value: var r) => Right(await r),
+      _ => throw TypeError()
+    };
   }
 
   Future<Either<Failure, ListerItem>> findListerItemByName(String name) async {
@@ -144,36 +213,63 @@ class PersistenceService {
     }
   }
 
-  Future<Either<Failure, ListerItem>> createItem(
-      int listId, String name, String description, int rating, bool experienced) async {
+  Future<Either<Failure, ItemWithTags>> createItem(
+      int listId, String name, String description, int rating, bool experienced, List<ListerTag> tags) async {
     try {
       final DateTime now = DateTime.now();
-      final query = database.into(database.listerItemTable).insertReturning(ListerItemTableCompanion.insert(
-          listId: listId,
-          name: name,
-          description: Value(description),
-          rating: Value(rating),
-          experienced: Value(experienced),
-          createdOn: now,
-          modifiedOn: now));
-      print(await query);
-      return Right(await query);
+      return database.transaction(() async {
+        final newItem = await database.into(database.listerItemTable).insertReturning(ListerItemTableCompanion.insert(
+            listId: listId,
+            name: name,
+            description: Value(description),
+            rating: Value(rating),
+            experienced: Value(experienced),
+            createdOn: now,
+            modifiedOn: now));
+
+        await database.batch((batch) {
+          batch.insertAll(
+              database.itemTagMappingTable,
+              tags.map((tag) => ItemTagMappingTableCompanion.insert(
+                    itemId: newItem.id,
+                    tagId: tag.id,
+                  )));
+        });
+
+        return Right(ItemWithTags(newItem, tags));
+      });
     } catch (e, stack) {
       return Left(Failure(e, stack));
     }
   }
 
-  Future<Either<Failure, ListerItem>> updateItem(ListerItem item,
-      {String? name, String? description, int? rating, bool? experienced}) async {
+  Future<Either<Failure, ItemWithTags>> updateItem(int itemId,
+      {String? name, String? description, int? rating, bool? experienced, List<ListerTag>? tags}) async {
     try {
-      final query = (database.update(database.listerItemTable)..where((tbl) => tbl.id.equals(item.id))).writeReturning(
-          ListerItemTableCompanion(
-              name: Value.ofNullable(name),
-              description: Value.ofNullable(description),
-              rating: Value.ofNullable(rating),
-              experienced: Value.ofNullable(experienced)));
+      final item = (await (database.update(database.listerItemTable)..where((tbl) => tbl.id.equals(itemId)))
+              .writeReturning(ListerItemTableCompanion(
+                  name: Value.ofNullable(name),
+                  description: Value.ofNullable(description),
+                  rating: Value.ofNullable(rating),
+                  experienced: Value.ofNullable(experienced))))
+          .first;
 
-      return Right((await query).first);
+      if (tags != null) {
+        await database.batch((batch) {
+          // first delete existing entries
+          batch.deleteWhere(database.itemTagMappingTable, (e) => e.itemId.equals(itemId));
+
+          // and then insert all entries
+          batch.insertAll(
+              database.itemTagMappingTable,
+              tags.map((tag) => ItemTagMappingTableCompanion.insert(
+                    itemId: item.id,
+                    tagId: tag.id,
+                  )));
+        });
+      }
+
+      return getListerItem(itemId);
     } catch (e, stack) {
       return Left(Failure(e, stack));
     }
@@ -181,6 +277,11 @@ class PersistenceService {
 
   Future<Either<Failure, int>> deleteItem(int itemId) async {
     try {
+      // first delete associations
+      await database.batch((batch) {
+        batch.deleteWhere(database.itemTagMappingTable, (e) => e.itemId.equals(itemId));
+      });
+
       final result = await (database.delete(database.listerItemTable)..where((tbl) => tbl.id.equals(itemId))).go();
       if (result == 1) {
         return Right(result);

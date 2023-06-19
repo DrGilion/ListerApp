@@ -830,6 +830,194 @@ class ListerTagTableCompanion extends UpdateCompanion<ListerTag> {
   }
 }
 
+class $ItemTagMappingTableTable extends ItemTagMappingTable
+    with TableInfo<$ItemTagMappingTableTable, ItemTagMapping> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ItemTagMappingTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<int> itemId = GeneratedColumn<int>(
+      'item_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES lister_list_table (id)'));
+  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
+  @override
+  late final GeneratedColumn<int> tagId = GeneratedColumn<int>(
+      'tag_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES lister_tag_table (id)'));
+  @override
+  List<GeneratedColumn> get $columns => [itemId, tagId];
+  @override
+  String get aliasedName => _alias ?? 'item_tag_mapping_table';
+  @override
+  String get actualTableName => 'item_tag_mapping_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<ItemTagMapping> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('item_id')) {
+      context.handle(_itemIdMeta,
+          itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta));
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('tag_id')) {
+      context.handle(
+          _tagIdMeta, tagId.isAcceptableOrUnknown(data['tag_id']!, _tagIdMeta));
+    } else if (isInserting) {
+      context.missing(_tagIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  ItemTagMapping map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ItemTagMapping(
+      itemId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}item_id'])!,
+      tagId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}tag_id'])!,
+    );
+  }
+
+  @override
+  $ItemTagMappingTableTable createAlias(String alias) {
+    return $ItemTagMappingTableTable(attachedDatabase, alias);
+  }
+}
+
+class ItemTagMapping extends DataClass implements Insertable<ItemTagMapping> {
+  final int itemId;
+  final int tagId;
+  const ItemTagMapping({required this.itemId, required this.tagId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['item_id'] = Variable<int>(itemId);
+    map['tag_id'] = Variable<int>(tagId);
+    return map;
+  }
+
+  ItemTagMappingTableCompanion toCompanion(bool nullToAbsent) {
+    return ItemTagMappingTableCompanion(
+      itemId: Value(itemId),
+      tagId: Value(tagId),
+    );
+  }
+
+  factory ItemTagMapping.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ItemTagMapping(
+      itemId: serializer.fromJson<int>(json['itemId']),
+      tagId: serializer.fromJson<int>(json['tagId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'itemId': serializer.toJson<int>(itemId),
+      'tagId': serializer.toJson<int>(tagId),
+    };
+  }
+
+  ItemTagMapping copyWith({int? itemId, int? tagId}) => ItemTagMapping(
+        itemId: itemId ?? this.itemId,
+        tagId: tagId ?? this.tagId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ItemTagMapping(')
+          ..write('itemId: $itemId, ')
+          ..write('tagId: $tagId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(itemId, tagId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ItemTagMapping &&
+          other.itemId == this.itemId &&
+          other.tagId == this.tagId);
+}
+
+class ItemTagMappingTableCompanion extends UpdateCompanion<ItemTagMapping> {
+  final Value<int> itemId;
+  final Value<int> tagId;
+  final Value<int> rowid;
+  const ItemTagMappingTableCompanion({
+    this.itemId = const Value.absent(),
+    this.tagId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ItemTagMappingTableCompanion.insert({
+    required int itemId,
+    required int tagId,
+    this.rowid = const Value.absent(),
+  })  : itemId = Value(itemId),
+        tagId = Value(tagId);
+  static Insertable<ItemTagMapping> custom({
+    Expression<int>? itemId,
+    Expression<int>? tagId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (itemId != null) 'item_id': itemId,
+      if (tagId != null) 'tag_id': tagId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ItemTagMappingTableCompanion copyWith(
+      {Value<int>? itemId, Value<int>? tagId, Value<int>? rowid}) {
+    return ItemTagMappingTableCompanion(
+      itemId: itemId ?? this.itemId,
+      tagId: tagId ?? this.tagId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (itemId.present) {
+      map['item_id'] = Variable<int>(itemId.value);
+    }
+    if (tagId.present) {
+      map['tag_id'] = Variable<int>(tagId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ItemTagMappingTableCompanion(')
+          ..write('itemId: $itemId, ')
+          ..write('tagId: $tagId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$ListerDatabase extends GeneratedDatabase {
   _$ListerDatabase(QueryExecutor e) : super(e);
   late final $ListerListTableTable listerListTable =
@@ -837,10 +1025,12 @@ abstract class _$ListerDatabase extends GeneratedDatabase {
   late final $ListerItemTableTable listerItemTable =
       $ListerItemTableTable(this);
   late final $ListerTagTableTable listerTagTable = $ListerTagTableTable(this);
+  late final $ItemTagMappingTableTable itemTagMappingTable =
+      $ItemTagMappingTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [listerListTable, listerItemTable, listerTagTable];
+      [listerListTable, listerItemTable, listerTagTable, itemTagMappingTable];
 }

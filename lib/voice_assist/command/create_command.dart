@@ -17,8 +17,8 @@ class CreateCommand extends Command<void> {
       final name = toBeginningOfSentenceCase(match.group(1)!)!;
       final listId = ListNavigationData.of(context).currentListId;
       if (listId != null) {
-        await PersistenceService.of(context).createItem(listId, name, '', 0, false).then((value) =>
-            value.fold((l) => logger.e('could not create item $name'), (r) => ItemAddedNotifier.of(context).add(r)));
+        await PersistenceService.of(context).createItem(listId, name, '', 0, false, []).then((value) =>
+            value.fold((l) => logger.e('could not create item $name'), (r) => ItemAddedNotifier.of(context).add(r.item)));
       } else {
         logger.e('no list is selected for inserted item $name');
       }

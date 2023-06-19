@@ -5,13 +5,14 @@ import 'package:highlight_text/highlight_text.dart';
 import 'package:lister_app/component/confimation_dialog.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/popup_options.dart';
+import 'package:lister_app/component/tag_item.dart';
 import 'package:lister_app/generated/l10n.dart';
+import 'package:lister_app/model/item_with_tags.dart';
 import 'package:lister_app/notification/item_removed_notification.dart';
-import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 
 class ListerItemTile extends StatefulWidget {
-  final ListerItem listItem;
+  final ItemWithTags listItem;
   final String highlightedText;
 
   const ListerItemTile({super.key, required this.listItem, this.highlightedText = ''});
@@ -21,7 +22,7 @@ class ListerItemTile extends StatefulWidget {
 }
 
 class _ListerItemTileState extends State<ListerItemTile> {
-  late ListerItem listItem;
+  late ItemWithTags listItem;
 
   @override
   void initState() {
@@ -68,15 +69,15 @@ class _ListerItemTileState extends State<ListerItemTile> {
               final bool decision = await showConfirmationDialog(
                 context,
                 Translations.of(context).deleteItem,
-                Translations.of(context).deleteItem_confirm(listItem.name),
+                Translations.of(context).deleteItem_confirm(listItem.item.name),
               );
 
               if (decision && mounted) {
-                PersistenceService.of(context).deleteItem(listItem.id).then((value) {
+                PersistenceService.of(context).deleteItem(listItem.item.id).then((value) {
                   value.fold((l) {
                     showErrorMessage(context, Translations.of(context).deleteItem_error, l.error, l.stackTrace);
                   }, (r) {
-                    ItemRemovedNotification(listItem.id).dispatch(context);
+                    ItemRemovedNotification(listItem.item.id).dispatch(context);
                   });
                 });
               }
@@ -85,7 +86,7 @@ class _ListerItemTileState extends State<ListerItemTile> {
         });
       },
       child: ListTile(
-        leading: listItem.experienced
+        leading: listItem.item.experienced
             ? const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -94,18 +95,28 @@ class _ListerItemTileState extends State<ListerItemTile> {
               )
             : const SizedBox(),
         title: TextHighlight(
-          text: listItem.name,
+          text: listItem.item.name,
           textStyle: const TextStyle(color: Colors.black),
           words: {
             if (widget.highlightedText.isNotEmpty)
               widget.highlightedText: HighlightedWord(textStyle: const TextStyle(backgroundColor: Colors.yellowAccent))
           },
         ),
-        subtitle: Linkify(text: listItem.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (listItem.item.description.isNotEmpty)
+              Linkify(text: listItem.item.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+            Wrap(
+              spacing: 8,
+              children: listItem.tags.map((e) => TagItem(tag: e)).toList(),
+            )
+          ],
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(listItem.rating.toString()),
+            Text(listItem.item.rating.toString()),
             const SizedBox(width: 2),
             const Icon(
               Icons.star,
@@ -117,10 +128,10 @@ class _ListerItemTileState extends State<ListerItemTile> {
         onTap: () async {
           final returnedItem = await context.push('/item/details', extra: listItem);
           if (returnedItem == null && mounted) {
-            ItemRemovedNotification(listItem.id).dispatch(context);
+            ItemRemovedNotification(listItem.item.id).dispatch(context);
           } else {
             setState(() {
-              listItem = returnedItem as ListerItem;
+              listItem = returnedItem as ItemWithTags;
             });
           }
         },

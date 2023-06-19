@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:lister_app/component/feedback.dart';
 import 'package:lister_app/component/lister_item_tile.dart';
 import 'package:lister_app/generated/l10n.dart';
+import 'package:lister_app/model/item_with_tags.dart';
 import 'package:lister_app/service/lister_database.dart';
 import 'package:lister_app/service/persistence_service.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -105,7 +106,7 @@ class _CalendarTabState extends State<CalendarTab> {
                   itemCount: value.length,
                   separatorBuilder: (context, idx) => const Divider(),
                   itemBuilder: (context, index) {
-                    return ListerItemTile(key: ValueKey(value[index].id), listItem: value[index]);
+                    return ListerItemTile(key: ValueKey(value[index].id), listItem: ItemWithTags(value[index], []));
                   },
                 );
               },
